@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        Int           @id @default(autoincrement())
+  email     String        @unique
+  name      String?
+  password  String
+  role      String        @default("USER") // USER, ADMIN
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  alerts    RateAlert[]
+  sessions  Session[]
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    Int
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Banner {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  image     String?
+  link      String?
+  published Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model News {
+  id        Int      @id @default(autoincrement())
+  title     String
+  slug      String   @unique
+  excerpt   String?
+  content   String?
+  image     String?
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Market {
+  id        Int         @id @default(autoincrement())
+  symbol    String      @unique
+  price     String
+  change    String
+  updatedAt DateTime    @updatedAt
+  alerts    RateAlert[]
+}
+
+model RateAlert {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  marketId  Int
+  type      String   // "ABOVE" veya "BELOW"
+  price     String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  market    Market   @relation(fields: [marketId], references: [id], onDelete: Cascade)
+}
