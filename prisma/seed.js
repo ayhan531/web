@@ -99,38 +99,92 @@ async function main() {
     ],
   });
 
-  // Market Data ekle
+  // Market Data ekle - 30+ sembol
   await prisma.marketData.deleteMany();
   await prisma.marketData.createMany({
     data: [
+      // Tech Giants
       { symbol: 'AAPL', name: 'Apple Inc.', price: 150.25, change: 2.5, changePercent: 1.69 },
       { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 140.80, change: -1.2, changePercent: -0.84 },
       { symbol: 'MSFT', name: 'Microsoft Corp.', price: 380.50, change: 5.2, changePercent: 1.38 },
       { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 170.45, change: 3.1, changePercent: 1.85 },
-      { symbol: 'TSLA', name: 'Tesla Inc.', price: 242.30, change: -4.5, changePercent: -1.83 },
       { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 875.20, change: 12.5, changePercent: 1.45 },
       { symbol: 'META', name: 'Meta Platforms Inc.', price: 485.75, change: 8.3, changePercent: 1.73 },
+      
+      // EV & Auto
+      { symbol: 'TSLA', name: 'Tesla Inc.', price: 242.30, change: -4.5, changePercent: -1.83 },
+      { symbol: 'GM', name: 'General Motors', price: 42.15, change: 1.2, changePercent: 2.93 },
+      { symbol: 'F', name: 'Ford Motor', price: 10.85, change: 0.3, changePercent: 2.84 },
+      
+      // Entertainment & Media
       { symbol: 'NFLX', name: 'Netflix Inc.', price: 245.60, change: 2.8, changePercent: 1.15 },
+      { symbol: 'DIS', name: 'Walt Disney', price: 92.50, change: -1.5, changePercent: -1.60 },
+      { symbol: 'PARA', name: 'Paramount Global', price: 15.20, change: 0.8, changePercent: 5.56 },
+      
+      // Finance & Banking
+      { symbol: 'JPM', name: 'JPMorgan Chase', price: 195.75, change: 3.2, changePercent: 1.66 },
+      { symbol: 'BAC', name: 'Bank of America', price: 38.45, change: 1.1, changePercent: 2.94 },
+      { symbol: 'WFC', name: 'Wells Fargo', price: 72.30, change: 2.5, changePercent: 3.58 },
+      { symbol: 'GS', name: 'Goldman Sachs', price: 485.20, change: 4.2, changePercent: 0.87 },
+      
+      // Healthcare & Pharma
+      { symbol: 'JNJ', name: 'Johnson & Johnson', price: 155.80, change: 1.2, changePercent: 0.78 },
+      { symbol: 'PFE', name: 'Pfizer Inc.', price: 28.45, change: -0.8, changePercent: -2.73 },
+      { symbol: 'MRNA', name: 'Moderna Inc.', price: 45.30, change: 2.1, changePercent: 4.85 },
+      { symbol: 'UNH', name: 'UnitedHealth Group', price: 485.60, change: 5.2, changePercent: 1.08 },
+      
+      // Energy
+      { symbol: 'XOM', name: 'Exxon Mobil', price: 115.40, change: 2.3, changePercent: 2.03 },
+      { symbol: 'CVX', name: 'Chevron Corp', price: 155.80, change: 3.1, changePercent: 2.03 },
+      { symbol: 'COP', name: 'ConocoPhillips', price: 125.50, change: 2.8, changePercent: 2.28 },
+      
+      // Consumer & Retail
+      { symbol: 'WMT', name: 'Walmart Inc.', price: 85.30, change: 1.5, changePercent: 1.79 },
+      { symbol: 'COST', name: 'Costco Wholesale', price: 925.40, change: 8.2, changePercent: 0.89 },
+      { symbol: 'MCD', name: 'McDonald\'s Corp', price: 295.60, change: 2.1, changePercent: 0.72 },
+      { symbol: 'SBUX', name: 'Starbucks Corp', price: 98.75, change: 1.8, changePercent: 1.85 },
+      
+      // Industrial & Manufacturing
+      { symbol: 'BA', name: 'Boeing Co.', price: 180.45, change: 3.2, changePercent: 1.80 },
+      { symbol: 'CAT', name: 'Caterpillar Inc.', price: 385.20, change: 4.5, changePercent: 1.18 },
+      { symbol: 'MMM', name: '3M Company', price: 102.30, change: 1.2, changePercent: 1.19 },
+      
+      // Communication & Telecom
+      { symbol: 'VZ', name: 'Verizon Communications', price: 42.80, change: 0.8, changePercent: 1.90 },
+      { symbol: 'T', name: 'AT&T Inc.', price: 22.15, change: 0.3, changePercent: 1.37 },
+      
+      // Crypto & Digital
+      { symbol: 'COIN', name: 'Coinbase Global', price: 125.80, change: 5.2, changePercent: 4.31 },
+      { symbol: 'MSTR', name: 'MicroStrategy', price: 285.40, change: 12.5, changePercent: 4.59 },
     ],
   });
 
   // Test kullanıcısı ve hesap oluştur
-  const testUser = await prisma.user.create({
-    data: {
-      email: 'test@local',
-      password: await bcrypt.hash('Test123!', 10),
-      name: 'Test Kullanıcı',
-      role: 'USER',
-    },
-  });
+  const existingTestUser = await prisma.user.findUnique({ where: { email: 'test@local' } });
+  let testUser = existingTestUser;
+  
+  if (!existingTestUser) {
+    testUser = await prisma.user.create({
+      data: {
+        email: 'test@local',
+        password: await bcrypt.hash('Test123!', 10),
+        name: 'Test Kullanıcı',
+        role: 'USER',
+      },
+    });
+  }
 
-  // Test kullanıcısı için hesap oluştur
-  await prisma.account.create({
-    data: {
-      userId: testUser.id,
-      balance: 10000.0,
-    },
-  });
+  // Test kullanıcısı için hesap oluştur (varsa güncelle)
+  if (testUser) {
+    await prisma.account.upsert({
+      where: { userId: testUser.id },
+      update: {},
+      create: {
+        userId: testUser.id,
+        balance: 10000.0,
+      },
+    });
+  }
 
   console.log('Seeding finished.');
   console.log('Test user: test@local / Test123!');

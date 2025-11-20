@@ -4,32 +4,27 @@ import { prisma } from './db';
 // Gerçek API ile değiştirilecek
 export async function updateMarketPrices() {
   try {
-    const symbols = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'NVDA', 'META', 'NFLX'];
+    const allMarkets = await prisma.marketData.findMany();
     
-    for (const symbol of symbols) {
+    for (const market of allMarkets) {
       // Mock fiyat değişimi (gerçek API'den gelecek)
-      const changePercent = (Math.random() - 0.5) * 4; // -2% ile +2% arası
-      const currentData = await prisma.marketData.findUnique({
-        where: { symbol },
+      // Volatilite: -3% ile +3% arası
+      const changePercent = (Math.random() - 0.5) * 6;
+      const newPrice = Math.max(market.price * (1 + changePercent / 100), 0.01);
+      const change = newPrice - market.price;
+
+      await prisma.marketData.update({
+        where: { symbol: market.symbol },
+        data: {
+          price: newPrice,
+          change,
+          changePercent,
+          updatedAt: new Date(),
+        },
       });
-
-      if (currentData) {
-        const newPrice = currentData.price * (1 + changePercent / 100);
-        const change = newPrice - currentData.price;
-
-        await prisma.marketData.update({
-          where: { symbol },
-          data: {
-            price: newPrice,
-            change,
-            changePercent,
-            updatedAt: new Date(),
-          },
-        });
-      }
     }
 
-    console.log(`[${new Date().toISOString()}] Market prices updated`);
+    console.log(`[${new Date().toISOString()}] Market prices updated for ${allMarkets.length} symbols`);
   } catch (error) {
     console.error('Error updating market prices:', error);
   }
