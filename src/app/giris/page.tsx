@@ -4,6 +4,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Reveal from '@/components/Reveal';
+import LoadingButton from '@/components/LoadingButton';
+import FormInput from '@/components/FormInput';
+import { validateEmail } from '@/lib/validation';
+import { showToast } from '@/components/Toast';
 
 export default function GirisPage() {
   const router = useRouter();
@@ -15,6 +19,26 @@ export default function GirisPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Validations
+    if (!email || !password) {
+      setError('Lütfen tüm alanları doldurunuz');
+      showToast('Lütfen tüm alanları doldurunuz', 'error');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setError('Geçerli bir email adresi girin');
+      showToast('Geçerli bir email adresi girin', 'error');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Şifre en az 6 karakter olmalıdır');
+      showToast('Şifre en az 6 karakter olmalıdır', 'error');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -27,11 +51,15 @@ export default function GirisPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Giriş başarısız');
+        const errorMsg = data.error || 'Giriş başarısız';
+        setError(errorMsg);
+        showToast(errorMsg, 'error');
         setLoading(false);
         return;
       }
 
+      showToast('Giriş başarılı!', 'success');
+      
       // Admin kullanıcıları admin panele, diğerleri ana sayfaya yönlendir
       if (data.user?.role === 'ADMIN') {
         router.push('/admin');
@@ -40,7 +68,9 @@ export default function GirisPage() {
       }
       router.refresh();
     } catch (err) {
-      setError('Bir hata oluştu');
+      const errorMsg = 'Bir hata oluştu';
+      setError(errorMsg);
+      showToast(errorMsg, 'error');
       setLoading(false);
     }
   };
@@ -57,35 +87,40 @@ export default function GirisPage() {
         <Reveal delayMs={120}>
           <form onSubmit={handleSubmit} className="mx-auto mt-8 max-w-md space-y-4 rounded-lg bg-[var(--surface)] p-6 shadow-sm">
             {error && (
-              <div className="rounded bg-red-50 p-3 text-sm text-red-600">{error}</div>
+              <div className="rounded bg-red-50 p-3 text-sm text-red-600 flex items-center gap-2">
+                <span>✕</span> {error}
+              </div>
             )}
-            <div>
-              <label className="mb-1 block text-sm font-medium">E-posta</label>
-              <input 
-                className="w-full rounded border border-[var(--border-color)] p-2" 
-                type="email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required 
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">Şifre</label>
-              <input 
-                className="w-full rounded border border-[var(--border-color)] p-2" 
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required 
-              />
-            </div>
-            <button 
+            <FormInput 
+              label="E-posta"
+              type="email" 
+              placeholder="example@mail.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              validator={(val) => ({
+                valid: validateEmail(val) || val === '',
+                error: 'Geçerli bir email adresi girin'
+              })}
+            />
+            <FormInput 
+              label="Şifre"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              validator={(val) => ({
+                valid: val.length >= 6 || val === '',
+                error: 'Şifre en az 6 karakter olmalıdır'
+              })}
+              helperText="En az 6 karakter"
+            />
+            <LoadingButton 
               type="submit" 
-              disabled={loading}
-              className="glow w-full rounded-md bg-[var(--primary)] px-4 py-2 font-medium text-white hover:bg-[var(--primary-dark)] disabled:opacity-50"
+              loading={loading}
+              className="w-full"
             >
-              {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
-            </button>
+              Giriş Yap
+            </LoadingButton>
             <p className="text-center text-sm text-[var(--text-light)]">
               Hesabınız yok mu? <a href="/kayit" className="text-[var(--primary)] hover:underline">Kayıt olun</a>
             </p>
