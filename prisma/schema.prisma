@@ -17,6 +17,7 @@ model User {
   updatedAt DateTime      @updatedAt
   alerts    RateAlert[]
   sessions  Session[]
+  account   Account?
 }
 
 model Session {
@@ -69,4 +70,63 @@ model RateAlert {
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   market    Market   @relation(fields: [marketId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id              Int       @id @default(autoincrement())
+  userId          Int       @unique
+  balance         Float     @default(10000.0) // Başlangıç bakiyesi
+  totalInvested   Float     @default(0.0)
+  totalReturns    Float     @default(0.0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  portfolio       Portfolio[]
+  transactions    Transaction[]
+}
+
+model Portfolio {
+  id              Int       @id @default(autoincrement())
+  accountId       Int
+  symbol          String
+  quantity        Float
+  averagePrice    Float
+  currentPrice    Float
+  totalValue      Float
+  gainLoss        Float
+  gainLossPercent Float
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  account         Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  
+  @@unique([accountId, symbol])
+}
+
+model Transaction {
+  id              Int       @id @default(autoincrement())
+  accountId       Int
+  symbol          String
+  type            String    // "BUY" veya "SELL"
+  quantity        Float
+  price           Float
+  totalAmount     Float
+  commission      Float     @default(0.0)
+  status          String    @default("COMPLETED") // PENDING, COMPLETED, CANCELLED
+  createdAt       DateTime  @default(now())
+  account         Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+}
+
+model MarketData {
+  id              Int       @id @default(autoincrement())
+  symbol          String    @unique
+  name            String?
+  price           Float
+  change          Float
+  changePercent   Float
+  high            Float?
+  low             Float?
+  volume          Float?
+  marketCap       String?
+  lastUpdated     DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }

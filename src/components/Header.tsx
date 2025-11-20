@@ -1,116 +1,261 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import MarketTicker from './MarketTicker';
 
-const navigation = [
-  { name: 'Ana Sayfa', href: '/' },
-  { name: 'Döviz Kurları', href: '/doviz' },
-  { name: 'Altın Fiyatları', href: '/altin' },
-  { name: 'Borsa', href: '/borsa' },
-  { name: 'Haberler', href: '/haberler' },
-  { name: 'Analiz', href: '/analiz' },
-];
+interface MarketData {
+  symbol: string;
+  name: string;
+  price: string;
+  changePercent: string;
+}
 
 export default function Header() {
-  const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname();
+  const [marketData, setMarketData] = useState<MarketData[]>([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    let counter = 0;
+
+    const fetchData = async () => {
+      counter++;
+      try {
+        const response = await fetch('/api/bist/stocks?limit=5');
+        const data = await response.json();
+
+        const formattedData = data.map((stock: any) => ({
+          symbol: stock.symbol,
+          name: stock.name,
+          price: stock.price,
+          changePercent: stock.changePercent,
+        }));
+
+        setMarketData(formattedData);
+      } catch (error) {
+        console.error('API hatası:', error);
+        generateDummyData();
+      }
+    };
+
+    const generateDummyData = () => {
+      const dummyStocks = [
+        { symbol: 'THYAO', name: 'Türk Hava Yolları', basePrice: 269.50 },
+        { symbol: 'AKBNK', name: 'Akbank', basePrice: 58.90 },
+        { symbol: 'GARAN', name: 'Garanti BBVA', basePrice: 129.80 },
+        { symbol: 'ASELS', name: 'Aselsan', basePrice: 67.80 },
+        { symbol: 'BIMAS', name: 'BİM', basePrice: 245.60 },
+      ];
+
+      const dummyData = dummyStocks.map((stock) => {
+        const deviation = (Math.random() - 0.5) * 0.002;
+        const price = stock.basePrice * (1 + deviation);
+        const changePercent = ((price - stock.basePrice) / stock.basePrice) * 100;
+
+        return {
+          symbol: stock.symbol,
+          name: stock.name,
+          price: price.toFixed(2),
+          changePercent: `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`,
+        };
+      });
+
+      setMarketData(dummyData);
+    };
+
+    fetchData();
+    intervalId = setInterval(fetchData, 6000);
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, []);
 
   return (
-    <header className="bg-white shadow-sm">
-      <nav className="container mx-auto px-4 sm:px-6 lg:px-8" aria-label="Ana navigasyon">
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+      {/* Top Bar - Market Data */}
+      <div className="bg-white border-b border-gray-100 hidden md:block">
+        <div className="container mx-auto px-4 py-2">
+          <MarketTicker data={marketData} />
+        </div>
+      </div>
+
+      {/* Main Navigation */}
+      <nav className="container mx-auto px-4 py-0">
         <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center">
-              <span className="text-2xl font-bold text-[var(--primary)]">YatırımPRO</span>
-            </Link>
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-2 font-bold text-lg text-gray-900 hover:text-green-700 transition">
+            <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-green-700 rounded flex items-center justify-center text-white font-bold text-sm">
+              YP
+            </div>
+            <span className="hidden sm:inline text-gray-900">YatırımPRO</span>
+          </Link>
+
+          {/* Desktop Menu */}
+          <div className="hidden lg:flex items-center space-x-0.5">
+            {/* Bizi Tanıyın */}
+            <div className="relative group">
+              <button className="px-4 py-2 text-sm font-semibold text-gray-700 hover:text-green-700 transition border-b-2 border-transparent group-hover:border-green-600">
+                Bizi Tanıyın
+              </button>
+              <div className="absolute left-0 mt-0 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-10 border border-gray-200">
+                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Hakkımızda</Link>
+                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">İnsan Kaynakları</Link>
+                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Yatırımcı İlişkileri</Link>
+              </div>
+            </div>
+
+            {/* Hizmetler */}
+            <div className="relative group">
+              <button className="px-4 py-2 text-sm font-semibold text-gray-700 hover:text-green-700 transition border-b-2 border-transparent group-hover:border-green-600">
+                Hizmetler
+              </button>
+              <div className="absolute left-0 mt-0 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-10 border border-gray-200">
+                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Kurumsal Finansman</Link>
+                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Yatırım Danışmanlığı</Link>
+                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Portföy Yönetimi</Link>
+              </div>
+            </div>
+
+            {/* Ürünler */}
+            <div className="relative group">
+              <button className="px-4 py-2 text-sm font-semibold text-gray-700 hover:text-green-700 transition border-b-2 border-transparent group-hover:border-green-600">
+                Ürünler
+              </button>
+              <div className="absolute left-0 mt-0 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-10 border border-gray-200">
+                <Link href="/borsa" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Pay Piyasası</Link>
+                <Link href="/doviz" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Döviz</Link>
+                <Link href="/altin" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Altın</Link>
+                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Yatırım Fonları</Link>
+              </div>
+            </div>
+
+            {/* Analiz */}
+            <div className="relative group">
+              <button className="px-4 py-2 text-sm font-semibold text-gray-700 hover:text-green-700 transition border-b-2 border-transparent group-hover:border-green-600">
+                Analiz
+              </button>
+              <div className="absolute left-0 mt-0 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-10 border border-gray-200">
+                <Link href="/analiz" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Analiz Özet</Link>
+                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Hisse Senetleri</Link>
+                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Araştırma Raporları</Link>
+                <Link href="/haberler" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Haberler</Link>
+              </div>
+            </div>
+
+            {/* Platformlar */}
+            <div className="relative group">
+              <button className="px-4 py-2 text-sm font-semibold text-gray-700 hover:text-green-700 transition border-b-2 border-transparent group-hover:border-green-600">
+                Platformlar
+              </button>
+              <div className="absolute left-0 mt-0 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-10 border border-gray-200">
+                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">TradeMaster Mobile</Link>
+                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">TradeMaster WEB</Link>
+                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">TradeMaster Masaüstü</Link>
+                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Herkese Borsa</Link>
+              </div>
+            </div>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-8">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`${
-                  pathname === item.href
-                    ? 'text-[var(--primary)] font-semibold'
-                    : 'text-gray-500 hover:text-[var(--primary)]'
-                } px-3 py-2 text-sm font-medium transition-colors`}
-              >
-                {item.name}
-              </Link>
-            ))}
+          {/* Right Side - Auth & Mobile Menu */}
+          <div className="flex items-center space-x-4">
             <Link
               href="/giris"
-              className="ml-8 inline-flex items-center justify-center rounded-md bg-[var(--primary)] px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[var(--primary-dark)]"
+              className="hidden sm:inline-flex items-center justify-center px-5 py-2 text-sm font-semibold text-green-700 hover:text-green-800 transition"
             >
               Giriş Yap
             </Link>
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="flex md:hidden">
-            <button
-              type="button"
-              className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500"
-              aria-controls="mobile-menu"
-              aria-expanded="false"
-              onClick={() => setIsOpen(!isOpen)}
+            <Link
+              href="/kayit"
+              className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-green-600 to-green-700 px-6 py-2 text-sm font-semibold text-white shadow-lg transition-all hover:shadow-xl hover:from-green-700 hover:to-green-800"
             >
-              <span className="sr-only">Menüyü aç</span>
-              {!isOpen ? (
-                <svg
-                  className="block h-6 w-6"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              ) : (
-                <svg
-                  className="block h-6 w-6"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              )}
+              Kayıt Ol
+            </Link>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-100 transition"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
             </button>
           </div>
         </div>
 
-        {/* Mobile menu */}
-        {isOpen && (
-          <div className="md:hidden" id="mobile-menu">
-            <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`${
-                    pathname === item.href
-                      ? 'bg-gray-100 text-[var(--primary)]'
-                      : 'text-gray-500 hover:bg-gray-50 hover:text-[var(--primary)]'
-                  } block rounded-md px-3 py-2 text-base font-medium`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              ))}
-              <Link
-                href="/giris"
-                className="block w-full text-center mt-4 rounded-md bg-[var(--primary)] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[var(--primary-dark)]"
-                onClick={() => setIsOpen(false)}
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden pb-4 border-t border-gray-200">
+            <div className="space-y-1">
+              <button
+                onClick={() => setActiveDropdown(activeDropdown === 'bizi' ? null : 'bizi')}
+                className="w-full text-left px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md flex items-center justify-between"
               >
-                Giriş Yap
-              </Link>
+                Bizi Tanıyın
+                <svg className={`w-4 h-4 transition-transform ${activeDropdown === 'bizi' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </button>
+              {activeDropdown === 'bizi' && (
+                <div className="pl-4 space-y-1">
+                  <Link href="#" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Hakkımızda</Link>
+                  <Link href="#" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">İnsan Kaynakları</Link>
+                  <Link href="#" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Yatırımcı İlişkileri</Link>
+                </div>
+              )}
+
+              <button
+                onClick={() => setActiveDropdown(activeDropdown === 'hizmetler' ? null : 'hizmetler')}
+                className="w-full text-left px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md flex items-center justify-between"
+              >
+                Hizmetler
+                <svg className={`w-4 h-4 transition-transform ${activeDropdown === 'hizmetler' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </button>
+              {activeDropdown === 'hizmetler' && (
+                <div className="pl-4 space-y-1">
+                  <Link href="#" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Kurumsal Finansman</Link>
+                  <Link href="#" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Yatırım Danışmanlığı</Link>
+                  <Link href="#" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Portföy Yönetimi</Link>
+                </div>
+              )}
+
+              <button
+                onClick={() => setActiveDropdown(activeDropdown === 'urunler' ? null : 'urunler')}
+                className="w-full text-left px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md flex items-center justify-between"
+              >
+                Ürünler
+                <svg className={`w-4 h-4 transition-transform ${activeDropdown === 'urunler' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </button>
+              {activeDropdown === 'urunler' && (
+                <div className="pl-4 space-y-1">
+                  <Link href="/borsa" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Pay Piyasası</Link>
+                  <Link href="/doviz" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Döviz</Link>
+                  <Link href="/altin" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Altın</Link>
+                </div>
+              )}
+
+              <button
+                onClick={() => setActiveDropdown(activeDropdown === 'analiz' ? null : 'analiz')}
+                className="w-full text-left px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md flex items-center justify-between"
+              >
+                Analiz
+                <svg className={`w-4 h-4 transition-transform ${activeDropdown === 'analiz' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </button>
+              {activeDropdown === 'analiz' && (
+                <div className="pl-4 space-y-1">
+                  <Link href="/analiz" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Analiz Özet</Link>
+                  <Link href="/haberler" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Haberler</Link>
+                </div>
+              )}
             </div>
           </div>
         )}

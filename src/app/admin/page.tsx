@@ -3,30 +3,48 @@
 import { useEffect, useState } from 'react';
 import Reveal from '@/components/Reveal';
 
+interface AdminStats {
+  users?: { total: number; admins: number; regularUsers: number };
+  accounts?: { total: number; totalBalance: number; totalInvested: number; totalReturns: number };
+  transactions?: { total: number; buy: number; sell: number };
+  market?: { activeSymbols: number };
+  banners?: number;
+  news?: number;
+  markets?: number;
+}
+
 export default function AdminDashboard() {
-  const [stats, setStats] = useState({ banners: 0, news: 0, markets: 0, alerts: 0 });
+  const [stats, setStats] = useState<AdminStats>({
+    users: { total: 0, admins: 0, regularUsers: 0 },
+    accounts: { total: 0, totalBalance: 0, totalInvested: 0, totalReturns: 0 },
+    transactions: { total: 0, buy: 0, sell: 0 },
+    market: { activeSymbols: 0 },
+    banners: 0,
+    news: 0,
+    markets: 0,
+  });
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/banners').then(r => r.json()),
-      fetch('/api/news').then(r => r.json()),
-      fetch('/api/markets').then(r => r.json()),
-      fetch('/api/alerts').then(r => r.json()).catch(() => []),
-    ]).then(([b, n, m, a]) => {
+      fetch('/api/admin/stats').then(r => r.json()).catch(() => ({})),
+      fetch('/api/banners').then(r => r.json()).catch(() => []),
+      fetch('/api/news').then(r => r.json()).catch(() => []),
+      fetch('/api/markets').then(r => r.json()).catch(() => []),
+    ]).then(([adminStats, b, n, m]) => {
       setStats({
+        ...adminStats,
         banners: b.length,
         news: n.length,
         markets: m.length,
-        alerts: a.length,
       });
     });
   }, []);
 
   const cards = [
-    { title: 'Bannerlar', count: stats.banners, icon: '📢', href: '/admin/banners', color: 'bg-blue-50 text-blue-600' },
-    { title: 'Haberler', count: stats.news, icon: '📰', href: '/admin/news', color: 'bg-green-50 text-green-600' },
-    { title: 'Piyasalar', count: stats.markets, icon: '📈', href: '/admin/markets', color: 'bg-purple-50 text-purple-600' },
-    { title: 'Alarmlar', count: stats.alerts, icon: '🔔', href: '/admin/alerts', color: 'bg-orange-50 text-orange-600' },
+    { title: 'Toplam Kullanıcı', count: stats.users?.total || 0, icon: '👥', href: '/admin/users', color: 'bg-blue-50 text-blue-600' },
+    { title: 'Hesaplar', count: stats.accounts?.total || 0, icon: '💼', href: '/admin/accounts', color: 'bg-green-50 text-green-600' },
+    { title: 'İşlemler', count: stats.transactions?.total || 0, icon: '📊', href: '/admin/transactions', color: 'bg-purple-50 text-purple-600' },
+    { title: 'Aktif Semboller', count: stats.market?.activeSymbols || 0, icon: '📈', href: '/admin/markets', color: 'bg-orange-50 text-orange-600' },
   ];
 
   return (

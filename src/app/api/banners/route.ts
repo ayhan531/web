@@ -6,7 +6,7 @@ const SECRET = process.env.ADMIN_JWT_SECRET || 'dev-secret-for-local';
 
 function getTokenFromCookie(cookieHeader: string | null) {
   if (!cookieHeader) return null;
-  const match = cookieHeader.match(/(?:^|; )token=([^;]+)/);
+  const match = cookieHeader.match(/(?:^|; )auth-token=([^;]+)/);
   return match ? match[1] : null;
 }
 

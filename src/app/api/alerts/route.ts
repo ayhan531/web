@@ -1,16 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { auth } from '@/lib/auth';
+import jwt from 'jsonwebtoken';
+
+const SECRET = process.env.ADMIN_JWT_SECRET || 'dev-secret-for-local';
+
+function getTokenFromCookie(cookieHeader: string | null) {
+  if (!cookieHeader) return null;
+  const match = cookieHeader.match(/(?:^|; )auth-token=([^;]+)/);
+  return match ? match[1] : null;
+}
+
+async function authenticateUser(request: NextRequest) {
+  const cookie = request.headers.get('cookie');
+  const token = getTokenFromCookie(cookie);
+  if (!token) return null;
+
+  try {
+    const payload = jwt.verify(token, SECRET) as any;
+    return payload;
+  } catch (err) {
+    return null;
+  }
+}
 
 // Alarm listesi
 export async function GET(request: NextRequest) {
-  const user = await auth(request);
+  const user = await authenticateUser(request);
   if (!user) {
     return NextResponse.json({ error: 'Yetkilendirme gerekli' }, { status: 401 });
   }
 
   const alerts = await prisma.rateAlert.findMany({
-    where: { userId: user.id },
+    where: { userId: user.userId },
     include: {
       market: true
     }
@@ -21,7 +42,7 @@ export async function GET(request: NextRequest) {
 
 // Yeni alarm oluştur
 export async function POST(request: NextRequest) {
-  const user = await auth(request);
+  const user = await authenticateUser(request);
   if (!user) {
     return NextResponse.json({ error: 'Yetkilendirme gerekli' }, { status: 401 });
   }
@@ -47,7 +68,7 @@ export async function POST(request: NextRequest) {
 
     const alert = await prisma.rateAlert.create({
       data: {
-        userId: user.id,
+        userId: user.userId,
         marketId,
         type,
         price: price.toString(),
@@ -70,7 +91,7 @@ export async function POST(request: NextRequest) {
 
 // Alarm güncelle/sil
 export async function PATCH(request: NextRequest) {
-  const user = await auth(request);
+  const user = await authenticateUser(request);
   if (!user) {
     return NextResponse.json({ error: 'Yetkilendirme gerekli' }, { status: 401 });
   }
@@ -82,7 +103,7 @@ export async function PATCH(request: NextRequest) {
     const alert = await prisma.rateAlert.update({
       where: {
         id,
-        userId: user.id // Sadece kendi alarmlarını güncelleyebilir
+        userId: user.userId // Sadece kendi alarmlarını güncelleyebilir
       },
       data: { active },
       include: {
@@ -102,7 +123,7 @@ export async function PATCH(request: NextRequest) {
 
 // Alarm sil
 export async function DELETE(request: NextRequest) {
-  const user = await auth(request);
+  const user = await authenticateUser(request);
   if (!user) {
     return NextResponse.json({ error: 'Yetkilendirme gerekli' }, { status: 401 });
   }
@@ -118,7 +139,7 @@ export async function DELETE(request: NextRequest) {
     await prisma.rateAlert.delete({
       where: {
         id,
-        userId: user.id // Sadece kendi alarmlarını silebilir
+        userId: user.userId // Sadece kendi alarmlarını silebilir
       }
     });
 

@@ -5,17 +5,26 @@ import Header from '@/components/Header';
 import type { Banner, News, Market } from '@/types';
 import Reveal from '@/components/Reveal';
 import BannerSlider from '@/components/BannerSlider';
-import VideoCard from '@/components/VideoCard';
 
 function MarketCard({ market }: { market: Market }) {
   const isPositive = market.change.startsWith('+');
   return (
-    <div className="lift rounded-lg bg-[var(--surface)] p-4 shadow-sm transition hover:shadow-md">
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold">{market.symbol}</h3>
-        <div className={isPositive ? 'text-[var(--success)]' : 'text-[var(--error)]'}>
+    <div className="lift rounded-lg bg-[var(--surface)] p-5 shadow-sm transition hover:shadow-lg border border-[var(--border-color)]">
+      <div className="flex items-start justify-between mb-3">
+        <div>
+          <h3 className="font-bold text-lg">{market.symbol}</h3>
+          <p className="text-xs text-[var(--text-light)] mt-1">Borsa İstanbul</p>
+        </div>
+        <div className={`px-2 py-1 rounded text-xs font-semibold ${isPositive ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'}`}>
+          {market.change}
+        </div>
+      </div>
+      <div className="flex items-end justify-between">
+        <div className={`text-2xl font-bold ${isPositive ? 'text-[var(--success)]' : 'text-[var(--error)]'}`}>
           {market.price}
-          <span className="ml-2">{market.change}</span>
+        </div>
+        <div className="text-xs text-[var(--text-light)]">
+          {isPositive ? '📈' : '📉'}
         </div>
       </div>
     </div>
@@ -24,21 +33,22 @@ function MarketCard({ market }: { market: Market }) {
 
 function NewsCard({ news }: { news: News }) {
   return (
-    <div className="lift rounded-lg bg-[var(--surface)] p-4 shadow-sm transition hover:shadow-md">
-      <h3 className="mb-2 font-semibold">{news.title}</h3>
-      <p className="text-[var(--text-light)]">{news.excerpt ?? ''}</p>
-      <div className="mt-4 text-sm text-[var(--text-light)]">
-        {new Date(news.createdAt).toLocaleDateString('tr-TR')}
+    <div className="lift rounded-lg bg-[var(--surface)] p-5 shadow-sm transition hover:shadow-lg border border-[var(--border-color)] h-full flex flex-col">
+      <div className="flex items-start gap-3 mb-3">
+        <div className="text-2xl">📰</div>
+        <div className="flex-1">
+          <h3 className="font-bold text-lg mb-2 line-clamp-2">{news.title}</h3>
+        </div>
       </div>
-    </div>
-  );
-}
-
-function BannerSlide({ banner }: { banner: Banner }) {
-  return (
-    <div className="animate-fade-in glow rounded-lg bg-[var(--primary)] p-6 text-white shadow-md">
-      <h2 className="mb-2 text-xl font-bold">{banner.title}</h2>
-      <p>{banner.content ?? ''}</p>
+      <p className="text-sm text-[var(--text-light)] mb-4 line-clamp-3 flex-1">{news.excerpt ?? ''}</p>
+      <div className="flex items-center justify-between pt-3 border-t border-[var(--border-color)]">
+        <span className="text-xs text-[var(--text-light)]">
+          {new Date(news.createdAt).toLocaleDateString('tr-TR')}
+        </span>
+        <a href={`/haberler/${news.id}`} className="text-xs text-[var(--primary)] hover:underline font-semibold">
+          Devamını Oku →
+        </a>
+      </div>
     </div>
   );
 }
@@ -53,7 +63,7 @@ export default function Home() {
     Promise.all([
       fetch('/api/banners').then(res => res.json()),
       fetch('/api/news').then(res => res.json()),
-      fetch('/api/bist/stocks?limit=6').then(res => res.json())
+      fetch('/api/bist/stocks?limit=9').then(res => res.json())
     ]).then(([bannersData, newsData, stocksData]) => {
       setBanners(bannersData);
       setNews(newsData);
@@ -76,176 +86,392 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main className="container mx-auto px-4">
-        {/* Banner Bölümü */}
-        <section className="py-6 md:py-8">
-          <div className="bg-gradient-hero rounded-xl p-8 text-white shadow-md">
+      <main>
+        {/* Hero Banner */}
+        <section className="bg-gradient-to-br from-green-50 via-white to-green-50 text-gray-900 py-16 md:py-24 relative overflow-hidden border-b border-green-200">
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-green-600 rounded-full -mr-48 -mt-48"></div>
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-green-600 rounded-full -ml-48 -mb-48"></div>
+          </div>
+          <div className="container mx-auto px-4 relative z-10">
             <Reveal>
-              <h1 className="mb-3 text-3xl font-bold">Güncel Piyasa Verileri ve Analizler</h1>
-              <p className="opacity-90">Akıcı bir deneyim için profesyonel animasyonlar ve modern arayüz.</p>
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight text-gray-900">Borsa İstanbul'da Yatırım Yapın</h1>
+              <p className="text-lg md:text-xl text-gray-700 mb-10 max-w-3xl leading-relaxed">
+                Gerçek zamanlı BIST verileri, profesyonel analiz araçları ve güvenilir işlem platformu ile yatırımlarınızı yönetin.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <a href="/kayit" className="inline-flex items-center px-8 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition shadow-lg">
+                  Hesap Aç
+                </a>
+                <a href="#" className="inline-flex items-center px-8 py-3 border-2 border-green-600 text-green-600 font-bold rounded-lg hover:bg-green-50 transition">
+                  Daha Fazla Bilgi
+                </a>
+              </div>
             </Reveal>
           </div>
-          <div className="mt-6">
-            <BannerSlider banners={banners} />
-          </div>
         </section>
 
-        {/* Piyasa Özeti + Video 1 */}
-        <section className="py-8 md:py-12">
+        {/* Ana Slider - Borsa Görselleri */}
+        <section className="py-6 md:py-8 container mx-auto px-4">
+          <BannerSlider banners={banners} />
+        </section>
+
+        {/* Piyasa Verileri */}
+        <section className="py-12 md:py-16 container mx-auto px-4 bg-white">
           <Reveal>
-            <h2 className="mb-6 text-2xl font-bold">Piyasa Özeti</h2>
-          </Reveal>
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            {/* Sol taraf - Piyasa kartları */}
-            <div className="lg:col-span-2">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {markets.map((market, i) => (
-                  <Reveal key={market.id} delayMs={i * 80}>
-                    <MarketCard market={market} />
-                  </Reveal>
-                ))}
+            <div className="mb-8 flex items-center justify-between">
+              <div>
+                <h2 className="text-4xl font-bold text-gray-900 mb-2">BIST Hisse Senetleri</h2>
+                <p className="text-gray-600">Borsa İstanbul'dan gerçek zamanlı canlı veriler</p>
               </div>
+              <a href="/borsa" className="text-green-700 hover:text-green-800 font-bold text-sm hidden md:block">
+                Tümünü Gör →
+              </a>
             </div>
-            
-            {/* Sağ taraf - Video 2 */}
-            <div className="lg:col-span-1">
-              <Reveal delayMs={100}>
-                <VideoCard
-                  src="/video2.mp4"
-                  title="Teknik Analiz Kavramları"
-                  description="Yatırımda başarı için teknik analiz temellerini öğrenin"
-                />
+          </Reveal>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {markets.map((market, i) => (
+              <Reveal key={market.id} delayMs={i * 80}>
+                <MarketCard market={market} />
               </Reveal>
-            </div>
+            ))}
           </div>
+          <Reveal delayMs={400}>
+            <div className="mt-8 rounded-lg bg-gradient-to-r from-green-50 to-green-100 p-5 text-center border border-green-200">
+              <p className="text-sm text-green-800 font-medium">
+                ⚡ Veriler BIST'ten anlık olarak güncellenmektedir • Son güncelleme: {new Date().toLocaleTimeString('tr-TR')}
+              </p>
+            </div>
+          </Reveal>
         </section>
 
-        {/* Video 1 + Güncel Haberler */}
-        <section className="py-8 md:py-12">
-          <Reveal>
-            <h2 className="mb-6 text-2xl font-bold">Güncel Haberler</h2>
-          </Reveal>
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            {/* Sol taraf - Video 1 */}
-            <div className="lg:col-span-1">
-              <Reveal delayMs={100}>
-                <VideoCard
-                  src="/video1.mp4"
-                  title="2025 Yılında Türkiye Ekonomisi"
-                  description="Türkiye ekonomisi ve piyasalar hakkında güncel analizler"
-                />
-              </Reveal>
-            </div>
-            
-            {/* Sağ taraf - Haberler */}
-            <div className="lg:col-span-2">
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                {news.map((item, i) => (
-                  <Reveal key={item.id} delayMs={i * 80}>
-                    <NewsCard news={item} />
-                  </Reveal>
-                ))}
+        {/* Haberler - Borsa Haberleri */}
+        <section className="py-12 md:py-16 bg-white border-y border-green-100">
+          <div className="container mx-auto px-4">
+            <Reveal>
+              <div className="mb-8 flex items-center justify-between">
+                <div>
+                  <h2 className="text-4xl font-bold text-gray-900 mb-2">Borsa Haberleri</h2>
+                  <p className="text-gray-600">Piyasaları etkileyen önemli gelişmeler ve haberler</p>
+                </div>
+                <a href="/haberler" className="text-green-700 hover:text-green-800 font-bold text-sm hidden md:block">
+                  Tüm Haberler →
+                </a>
               </div>
+            </Reveal>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {news.map((item, i) => (
+                <Reveal key={item.id} delayMs={i * 80}>
+                  <NewsCard news={item} />
+                </Reveal>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Eğitim Videosu - Video 3 */}
-        <section className="py-8 md:py-12">
-          <Reveal>
-            <h2 className="mb-6 text-2xl font-bold">Yatırım Eğitimi</h2>
-          </Reveal>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div className="md:col-span-1">
-              <Reveal>
-                <VideoCard
-                  src="/video3.mp4"
-                  title="Yeni Yatırımcılar İçin Rehber"
-                  description="Yatırıma başlayanlar için pratik ipuçları ve stratejiler"
-                />
+        {/* Video Bölümü */}
+        <section className="py-12 md:py-16 bg-green-50 border-y border-green-200">
+          <div className="container mx-auto px-4">
+            <Reveal>
+              <div className="mb-12 text-center">
+                <h2 className="text-4xl font-bold mb-3 text-gray-900">Eğitim Videoları</h2>
+                <p className="text-lg text-gray-700 max-w-2xl mx-auto">Borsa yatırım stratejileri ve teknik analiz hakkında profesyonel video içerikleri</p>
+              </div>
+            </Reveal>
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+              <Reveal delayMs={0}>
+                <div className="rounded-xl overflow-hidden shadow-2xl hover:shadow-3xl transition group">
+                  <div className="relative bg-black aspect-video overflow-hidden">
+                    <video 
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                      controls
+                      poster="/video1.mp4"
+                    >
+                      <source src="/video1.mp4" type="video/mp4" />
+                      Tarayıcınız video oynatmayı desteklemiyor.
+                    </video>
+                  </div>
+                  <div className="p-6 bg-white border-t border-green-200">
+                    <h3 className="font-bold text-lg mb-2 text-gray-900">Borsa Yatırım Stratejileri</h3>
+                    <p className="text-gray-700 text-sm">Başarılı yatırım stratejileri ve risk yönetimi hakkında detaylı rehber</p>
+                  </div>
+                </div>
               </Reveal>
-            </div>
-            <div className="md:col-span-1 lg:col-span-2">
               <Reveal delayMs={100}>
-                <div className="lift rounded-lg bg-[var(--surface)] p-6 shadow-sm">
-                  <h3 className="mb-4 text-xl font-semibold">Neden Eğitim Önemli?</h3>
-                  <ul className="space-y-3 text-[var(--text-light)]">
-                    <li className="flex items-start gap-2">
-                      <span className="text-[var(--primary)]">✓</span>
-                      <span>Bilinçli yatırım kararları almanıza yardımcı olur</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-[var(--primary)]">✓</span>
-                      <span>Risk yönetimi becerilerinizi geliştirir</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-[var(--primary)]">✓</span>
-                      <span>Piyasa trendlerini daha iyi analiz edebilirsiniz</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-[var(--primary)]">✓</span>
-                      <span>Uzun vadeli başarı için sağlam temeller oluşturur</span>
-                    </li>
-                  </ul>
+                <div className="rounded-xl overflow-hidden shadow-2xl hover:shadow-3xl transition group">
+                  <div className="relative bg-black aspect-video overflow-hidden">
+                    <video 
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                      controls
+                      poster="/video2.mp4"
+                    >
+                      <source src="/video2.mp4" type="video/mp4" />
+                      Tarayıcınız video oynatmayı desteklemiyor.
+                    </video>
+                  </div>
+                  <div className="p-6 bg-white border-t border-green-200">
+                    <h3 className="font-bold text-lg mb-2 text-gray-900">Teknik Analiz Temel Kavramları</h3>
+                    <p className="text-gray-700 text-sm">Grafik analizi, göstergeler ve trend analizi hakkında kapsamlı bilgiler</p>
+                  </div>
+                </div>
+              </Reveal>
+              <Reveal delayMs={200}>
+                <div className="rounded-xl overflow-hidden shadow-2xl hover:shadow-3xl transition group">
+                  <div className="relative bg-black aspect-video overflow-hidden">
+                    <video 
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                      controls
+                      poster="/video3.mp4"
+                    >
+                      <source src="/video3.mp4" type="video/mp4" />
+                      Tarayıcınız video oynatmayı desteklemiyor.
+                    </video>
+                  </div>
+                  <div className="p-6 bg-white border-t border-green-200">
+                    <h3 className="font-bold text-lg mb-2 text-gray-900">Portföy Yönetimi ve Çeşitlendirme</h3>
+                    <p className="text-gray-700 text-sm">Portföy oluşturma, çeşitlendirme ve uzun vadeli yatırım stratejileri</p>
+                  </div>
                 </div>
               </Reveal>
             </div>
           </div>
         </section>
 
+        {/* Platformlar Bölümü */}
+        <section className="py-12 md:py-16 bg-white border-y border-green-100">
+          <div className="container mx-auto px-4">
+            <Reveal>
+              <div className="mb-12 text-center">
+                <h2 className="text-4xl font-bold text-gray-900 mb-3">İşlem Platformları</h2>
+                <p className="text-lg text-gray-700 max-w-2xl mx-auto">BIST'te yatırım yapmak için güçlü, güvenli ve kullanıcı dostu profesyonel platformlar</p>
+              </div>
+            </Reveal>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <Reveal delayMs={0}>
+                <div className="rounded-xl bg-white p-7 shadow-lg hover:shadow-2xl transition border border-gray-200 hover:border-green-300 group">
+                  <div className="text-5xl mb-4 group-hover:scale-110 transition">📱</div>
+                  <h3 className="font-bold text-lg mb-3 text-gray-900">TradeMaster Mobile</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">Mobil cihazınızdan yurt içi ve yurt dışı piyasalarda anlık işlem yapın</p>
+                </div>
+              </Reveal>
+              <Reveal delayMs={100}>
+                <div className="rounded-xl bg-white p-7 shadow-lg hover:shadow-2xl transition border border-gray-200 hover:border-green-300 group">
+                  <div className="text-5xl mb-4 group-hover:scale-110 transition">🌐</div>
+                  <h3 className="font-bold text-lg mb-3 text-gray-900">TradeMaster WEB</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">Web tarayıcısından erişilebilen güvenli ve hızlı işlem platformu</p>
+                </div>
+              </Reveal>
+              <Reveal delayMs={200}>
+                <div className="rounded-xl bg-white p-7 shadow-lg hover:shadow-2xl transition border border-gray-200 hover:border-green-300 group">
+                  <div className="text-5xl mb-4 group-hover:scale-110 transition">💻</div>
+                  <h3 className="font-bold text-lg mb-3 text-gray-900">TradeMaster Masaüstü</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">Profesyonel masaüstü uygulaması ile gelişmiş analiz araçları</p>
+                </div>
+              </Reveal>
+              <Reveal delayMs={300}>
+                <div className="rounded-xl bg-white p-7 shadow-lg hover:shadow-2xl transition border border-gray-200 hover:border-green-300 group">
+                  <div className="text-5xl mb-4 group-hover:scale-110 transition">🚀</div>
+                  <h3 className="font-bold text-lg mb-3 text-gray-900">Herkese Borsa</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">Dijital ve şubesiz deneyim ile avantajlı komisyon oranları</p>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
+        {/* Bireysel Ürünler ve Hizmetler */}
+        <section className="py-12 md:py-16 bg-gray-50 border-y border-gray-200">
+          <div className="container mx-auto px-4">
+            <Reveal>
+              <div className="mb-12 text-center">
+                <h2 className="text-4xl font-bold text-gray-900 mb-3">Bireysel Ürünler ve Hizmetler</h2>
+                <p className="text-lg text-gray-600">Tüm yatırım ihtiyaçlarınız için kapsamlı çözümler</p>
+              </div>
+            </Reveal>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              <Reveal delayMs={0}>
+                <button className="lift rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 p-7 text-white shadow-lg hover:shadow-2xl transition text-left group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition">💼</div>
+                  <h3 className="font-bold mb-2 text-lg">Varlık Yönetimi</h3>
+                  <p className="text-sm opacity-95">Profesyonel portföy yönetimi hizmetleri</p>
+                </button>
+              </Reveal>
+              <Reveal delayMs={100}>
+                <button className="lift rounded-xl bg-gradient-to-br from-green-500 to-green-600 p-7 text-white shadow-lg hover:shadow-2xl transition text-left group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition">🌍</div>
+                  <h3 className="font-bold mb-2 text-lg">Yurtdışı İşlemler</h3>
+                  <p className="text-sm opacity-95">Uluslararası piyasalarda yatırım fırsatları</p>
+                </button>
+              </Reveal>
+              <Reveal delayMs={200}>
+                <button className="lift rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 p-7 text-white shadow-lg hover:shadow-2xl transition text-left group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition">📈</div>
+                  <h3 className="font-bold mb-2 text-lg">Hisse Senedi</h3>
+                  <p className="text-sm opacity-95">BIST'te anlık alım-satım işlemleri</p>
+                </button>
+              </Reveal>
+              <Reveal delayMs={300}>
+                <button className="lift rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 p-7 text-white shadow-lg hover:shadow-2xl transition text-left group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition">🪙</div>
+                  <h3 className="font-bold mb-2 text-lg">Altın İşlemleri</h3>
+                  <p className="text-sm opacity-95">Altın alım-satım işlemleri</p>
+                </button>
+              </Reveal>
+              <Reveal delayMs={400}>
+                <button className="lift rounded-xl bg-gradient-to-br from-red-500 to-red-600 p-7 text-white shadow-lg hover:shadow-2xl transition text-left group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition">🔐</div>
+                  <h3 className="font-bold mb-2 text-lg">Yatırım Danışmanlığı</h3>
+                  <p className="text-sm opacity-95">Uzman danışmanlardan kişisel destek</p>
+                </button>
+              </Reveal>
+              <Reveal delayMs={500}>
+                <button className="lift rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 p-7 text-white shadow-lg hover:shadow-2xl transition text-left group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition">📊</div>
+                  <h3 className="font-bold mb-2 text-lg">Teknik Analiz</h3>
+                  <p className="text-sm opacity-95">Gelişmiş grafik ve analiz platformu</p>
+                </button>
+              </Reveal>
+              <Reveal delayMs={600}>
+                <button className="lift rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-7 text-white shadow-lg hover:shadow-2xl transition text-left group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition">💳</div>
+                  <h3 className="font-bold mb-2 text-lg">Kredili İşlemler</h3>
+                  <p className="text-sm opacity-95">Kaldıraçlı yatırım imkanları</p>
+                </button>
+              </Reveal>
+              <Reveal delayMs={700}>
+                <button className="lift rounded-xl bg-gradient-to-br from-pink-500 to-pink-600 p-7 text-white shadow-lg hover:shadow-2xl transition text-left group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition">🎯</div>
+                  <h3 className="font-bold mb-2 text-lg">Vadeli İşlemler</h3>
+                  <p className="text-sm opacity-95">Futures ve opsiyon işlemleri</p>
+                </button>
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
+        {/* Kurumsal Hizmetler */}
+        <section className="py-12 md:py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <Reveal>
+              <div className="mb-12 text-center">
+                <h2 className="text-4xl font-bold text-gray-900 mb-3">Kurumsal Hizmetler</h2>
+                <p className="text-lg text-gray-600">Şirketlerinizin finansal hedeflerine ulaşması için kapsamlı çözümler</p>
+              </div>
+            </Reveal>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <Reveal delayMs={0}>
+                <button className="lift rounded-xl bg-white p-7 shadow-lg hover:shadow-2xl transition text-left border-2 border-gray-200 hover:border-blue-400 group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition">🚀</div>
+                  <h3 className="font-bold mb-2 text-lg text-gray-900">Halka Arz (IPO)</h3>
+                  <p className="text-sm text-gray-600">Şirketinizi borsaya açma süreçlerinde tam destek</p>
+                </button>
+              </Reveal>
+              <Reveal delayMs={100}>
+                <button className="lift rounded-xl bg-white p-7 shadow-lg hover:shadow-2xl transition text-left border-2 border-gray-200 hover:border-blue-400 group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition">📦</div>
+                  <h3 className="font-bold mb-2 text-lg text-gray-900">Blok Satışlar</h3>
+                  <p className="text-sm text-gray-600">Büyük hacimli hisse senedi alım-satım işlemleri</p>
+                </button>
+              </Reveal>
+              <Reveal delayMs={200}>
+                <button className="lift rounded-xl bg-white p-7 shadow-lg hover:shadow-2xl transition text-left border-2 border-gray-200 hover:border-blue-400 group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition">🤝</div>
+                  <h3 className="font-bold mb-2 text-lg text-gray-900">Kurumsal Finansman</h3>
+                  <p className="text-sm text-gray-600">Şirketler için özel finansman çözümleri</p>
+                </button>
+              </Reveal>
+              <Reveal delayMs={300}>
+                <button className="lift rounded-xl bg-white p-7 shadow-lg hover:shadow-2xl transition text-left border-2 border-gray-200 hover:border-blue-400 group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition">📋</div>
+                  <h3 className="font-bold mb-2 text-lg text-gray-900">Yatırımcı İlişkileri</h3>
+                  <p className="text-sm text-gray-600">Yatırımcı iletişimi ve raporlama hizmetleri</p>
+                </button>
+              </Reveal>
+              <Reveal delayMs={400}>
+                <button className="lift rounded-xl bg-white p-7 shadow-lg hover:shadow-2xl transition text-left border-2 border-gray-200 hover:border-blue-400 group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition">💡</div>
+                  <h3 className="font-bold mb-2 text-lg text-gray-900">Kurumsal Danışmanlık</h3>
+                  <p className="text-sm text-gray-600">Stratejik yatırım ve birleşme danışmanlığı</p>
+                </button>
+              </Reveal>
+              <Reveal delayMs={500}>
+                <button className="lift rounded-xl bg-white p-7 shadow-lg hover:shadow-2xl transition text-left border-2 border-gray-200 hover:border-blue-400 group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition">🎓</div>
+                  <h3 className="font-bold mb-2 text-lg text-gray-900">Kurumsal Eğitim</h3>
+                  <p className="text-sm text-gray-600">Çalışanlar için finans ve yatırım eğitimleri</p>
+                </button>
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
         {/* CTA Bölümü */}
-        <section className="py-12 text-center">
-          <Reveal>
-            <h2 className="mb-4 text-3xl font-bold">Yatırım Yolculuğunuza Başlayın</h2>
-            <p className="mb-8 text-[var(--text-light)]">
-              Profesyonel araçlar ve güncel piyasa analizleriyle yatırımlarınızı yönetin.
-            </p>
-            <a
-              href="/kayit"
-              className="glow inline-flex items-center rounded-md bg-[var(--primary)] px-6 py-3 font-medium text-white shadow-sm transition hover:bg-[var(--primary-dark)]"
-            >
-              Hemen Başla
-            </a>
-          </Reveal>
+        <section className="py-16 md:py-24 bg-gradient-to-br from-green-50 via-white to-green-50 text-gray-900 relative overflow-hidden border-t border-green-200">
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-green-600 rounded-full -mr-48 -mt-48"></div>
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-green-600 rounded-full -ml-48 -mb-48"></div>
+          </div>
+          <div className="container mx-auto px-4 text-center relative z-10">
+            <Reveal>
+              <h2 className="mb-6 text-5xl md:text-6xl font-bold leading-tight text-gray-900">Borsa İstanbul'da Yatırım Yapın</h2>
+              <p className="mb-10 text-lg md:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+                Gerçek zamanlı BIST verileri, profesyonel analiz araçları ve güvenilir işlem platformu ile yatırımlarınızı yönetin.
+              </p>
+              <a
+                href="/kayit"
+                className="inline-flex items-center px-10 py-4 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition shadow-2xl text-lg"
+              >
+                Hesap Aç
+              </a>
+            </Reveal>
+          </div>
         </section>
       </main>
 
-      <footer className="mt-12 bg-[var(--surface)] py-12">
+      <footer className="bg-white text-gray-700 py-16 border-t border-green-200">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4 mb-12">
             <div>
-              <h3 className="mb-4 font-bold">YatırımPRO</h3>
-              <p className="text-[var(--text-light)]">
-                Türkiye'nin öncü yatırım ve finans platformu.
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-green-700 rounded flex items-center justify-center text-white font-bold">
+                  YP
+                </div>
+                <h3 className="font-bold text-gray-900 text-lg">YatırımPRO</h3>
+              </div>
+              <p className="text-gray-600 leading-relaxed">
+                Borsa İstanbul'da yatırım yapmak için profesyonel araçlar ve güvenilir hizmetler sunan platform.
               </p>
             </div>
             <div>
-              <h4 className="mb-4 font-semibold">Piyasalar</h4>
-              <ul className="space-y-2">
-                <li><a href="/doviz" className="text-[var(--text-light)] hover:text-[var(--primary)]">Döviz</a></li>
-                <li><a href="/altin" className="text-[var(--text-light)] hover:text-[var(--primary)]">Altın</a></li>
-                <li><a href="/borsa" className="text-[var(--text-light)] hover:text-[var(--primary)]">Borsa</a></li>
-                <li><a href="/kripto" className="text-[var(--text-light)] hover:text-[var(--primary)]">Kripto</a></li>
+              <h4 className="mb-5 font-bold text-gray-900 text-sm uppercase tracking-wide">Ürünler</h4>
+              <ul className="space-y-3">
+                <li><a href="/altin" className="text-gray-600 hover:text-green-700 transition font-medium">Altın</a></li>
+                <li><a href="/borsa" className="text-gray-600 hover:text-green-700 transition font-medium">Borsa</a></li>
+                <li><a href="/doviz" className="text-gray-600 hover:text-green-700 transition font-medium">Döviz</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-green-700 transition font-medium">Yatırım Fonları</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="mb-4 font-semibold">Şirket</h4>
-              <ul className="space-y-2">
-                <li><a href="/hakkimizda" className="text-[var(--text-light)] hover:text-[var(--primary)]">Hakkımızda</a></li>
-                <li><a href="/iletisim" className="text-[var(--text-light)] hover:text-[var(--primary)]">İletişim</a></li>
-                <li><a href="/blog" className="text-[var(--text-light)] hover:text-[var(--primary)]">Blog</a></li>
+              <h4 className="mb-5 font-bold text-gray-900 text-sm uppercase tracking-wide">Şirket</h4>
+              <ul className="space-y-3">
+                <li><a href="#" className="text-gray-600 hover:text-green-700 transition font-medium">Hakkımızda</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-green-700 transition font-medium">İletişim</a></li>
+                <li><a href="/haberler" className="text-gray-600 hover:text-green-700 transition font-medium">Haberler</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-green-700 transition font-medium">Blog</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="mb-4 font-semibold">Yasal</h4>
-              <ul className="space-y-2">
-                <li><a href="/gizlilik" className="text-[var(--text-light)] hover:text-[var(--primary)]">Gizlilik Politikası</a></li>
-                <li><a href="/kosullar" className="text-[var(--text-light)] hover:text-[var(--primary)]">Kullanım Koşulları</a></li>
+              <h4 className="mb-5 font-bold text-gray-900 text-sm uppercase tracking-wide">Yasal</h4>
+              <ul className="space-y-3">
+                <li><a href="#" className="text-gray-600 hover:text-green-700 transition font-medium">Gizlilik Politikası</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-green-700 transition font-medium">Kullanım Koşulları</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-green-700 transition font-medium">Risk Uyarısı</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-green-700 transition font-medium">Aydınlatma Metni</a></li>
               </ul>
             </div>
           </div>
-          <div className="mt-8 border-t border-[var(--border-color)] pt-8 text-center text-[var(--text-light)]">
-            <p>&copy; {new Date().getFullYear()} YatırımPRO. Tüm hakları saklıdır.</p>
+          <div className="border-t border-green-200 pt-8 text-center">
+            <p className="text-gray-600 font-medium">&copy; {new Date().getFullYear()} YatırımPRO. Tüm hakları saklıdır.</p>
           </div>
         </div>
       </footer>
