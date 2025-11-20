@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import jwt from 'jsonwebtoken';
-import type { JwtPayload } from 'jsonwebtoken';
 
 const SECRET = process.env.ADMIN_JWT_SECRET || 'dev-secret-for-local';
 
@@ -24,7 +23,6 @@ async function authenticateUser(request: NextRequest) {
   }
 }
 
-// Alarm listesi
 export async function GET(request: NextRequest) {
   const user = await authenticateUser(request);
   if (!user) {
@@ -33,15 +31,12 @@ export async function GET(request: NextRequest) {
 
   const alerts = await prisma.rateAlert.findMany({
     where: { userId: user.userId },
-    include: {
-      market: true
-    }
+    include: { market: true }
   });
 
   return NextResponse.json(alerts);
 }
 
-// Yeni alarm oluştur
 export async function POST(request: NextRequest) {
   const user = await authenticateUser(request);
   if (!user) {
@@ -52,7 +47,6 @@ export async function POST(request: NextRequest) {
     const data = await request.json();
     const { marketId, type, price } = data;
 
-    // Geçerlilik kontrolleri
     if (!marketId || !type || !price) {
       return NextResponse.json({ error: 'Eksik bilgi' }, { status: 400 });
     }
@@ -61,7 +55,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Geçersiz alarm tipi' }, { status: 400 });
     }
 
-    // Sayısal değer kontrolü
     const priceValue = parseFloat(price);
     if (isNaN(priceValue) || priceValue <= 0) {
       return NextResponse.json({ error: 'Geçersiz fiyat' }, { status: 400 });
@@ -75,22 +68,16 @@ export async function POST(request: NextRequest) {
         price: price.toString(),
         active: true
       },
-      include: {
-        market: true
-      }
+      include: { market: true }
     });
 
     return NextResponse.json(alert);
   } catch (error) {
     console.error('Alarm oluşturma hatası:', error);
-    return NextResponse.json(
-      { error: 'Alarm oluşturulamadı' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Alarm oluşturulamadı' }, { status: 500 });
   }
 }
 
-// Alarm güncelle/sil
 export async function PATCH(request: NextRequest) {
   const user = await authenticateUser(request);
   if (!user) {
@@ -102,27 +89,18 @@ export async function PATCH(request: NextRequest) {
     const { id, active } = data;
 
     const alert = await prisma.rateAlert.update({
-      where: {
-        id,
-        userId: user.userId // Sadece kendi alarmlarını güncelleyebilir
-      },
+      where: { id, userId: user.userId },
       data: { active },
-      include: {
-        market: true
-      }
+      include: { market: true }
     });
 
     return NextResponse.json(alert);
   } catch (error) {
     console.error('Alarm güncelleme hatası:', error);
-    return NextResponse.json(
-      { error: 'Alarm güncellenemedi' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Alarm güncellenemedi' }, { status: 500 });
   }
 }
 
-// Alarm sil
 export async function DELETE(request: NextRequest) {
   const user = await authenticateUser(request);
   if (!user) {
@@ -138,18 +116,12 @@ export async function DELETE(request: NextRequest) {
     }
 
     await prisma.rateAlert.delete({
-      where: {
-        id,
-        userId: user.userId // Sadece kendi alarmlarını silebilir
-      }
+      where: { id, userId: user.userId }
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Alarm silme hatası:', error);
-    return NextResponse.json(
-      { error: 'Alarm silinemedi' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Alarm silinemedi' }, { status: 500 });
   }
 }
