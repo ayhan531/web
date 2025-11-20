@@ -22,21 +22,23 @@ async function verifyAdmin(req: Request) {
   }
 }
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const news = await prisma.news.findUnique({ where: { id: parseInt(params.id) } });
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const news = await prisma.news.findUnique({ where: { id: parseInt(id) } });
   if (!news) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json(news);
 }
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!await verifyAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   try {
+    const { id } = await params;
     const body = await req.json();
     const { title, slug, excerpt, content, image, published } = body;
     const news = await prisma.news.update({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       data: { title, slug, excerpt, content, image, published },
     });
     return NextResponse.json(news);
@@ -46,12 +48,13 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!await verifyAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   try {
-    await prisma.news.delete({ where: { id: parseInt(params.id) } });
+    const { id } = await params;
+    await prisma.news.delete({ where: { id: parseInt(id) } });
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error(err);
