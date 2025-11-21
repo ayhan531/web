@@ -12,6 +12,7 @@
     "seed": "node prisma/seed.js"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@prisma/client": "^6.19.0",
     "bcryptjs": "^3.0.3",
     "fast-xml-parser": "^5.3.1",

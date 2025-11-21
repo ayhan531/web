@@ -6,13 +6,13 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding database...');
 
-  const password = await bcrypt.hash('Admin123!', 10);
+  const password = await bcrypt.hash('Admin123', 10);
 
-  const existing = await prisma.user.findUnique({ where: { email: 'admin@local' } });
+  const existing = await prisma.user.findUnique({ where: { email: 'admin@local.com' } });
   if (!existing) {
     await prisma.user.create({
       data: {
-        email: 'admin@local',
+        email: 'admin@local.com',
         password,
         role: 'ADMIN',
       },

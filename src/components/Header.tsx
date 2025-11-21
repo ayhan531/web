@@ -137,19 +137,19 @@ export default function Header() {
               </button>
               <div className="absolute left-0 mt-0 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-10 border border-gray-200">
                 <Link
-                  href="#"
+                  href="/hakkimizda"
                   className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
                 >
                   Hakkımızda
                 </Link>
                 <Link
-                  href="#"
+                  href="/insan-kaynaklari"
                   className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
                 >
                   İnsan Kaynakları
                 </Link>
                 <Link
-                  href="#"
+                  href="/yatirimci-iliskileri"
                   className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
                 >
                   Yatırımcı İlişkileri
@@ -164,19 +164,19 @@ export default function Header() {
               </button>
               <div className="absolute left-0 mt-0 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-10 border border-gray-200">
                 <Link
-                  href="#"
+                  href="/kurumsal-finansman"
                   className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
                 >
                   Kurumsal Finansman
                 </Link>
                 <Link
-                  href="#"
+                  href="/yatirim-danismanligi"
                   className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
                 >
                   Yatırım Danışmanlığı
                 </Link>
                 <Link
-                  href="#"
+                  href="/portfoy-yonetimi"
                   className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
                 >
                   Portföy Yönetimi
@@ -351,19 +351,19 @@ export default function Header() {
               {activeDropdown === "bizi" && (
                 <div className="pl-4 space-y-1">
                   <Link
-                    href="#"
+                    href="/hakkimizda"
                     className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
                   >
                     Hakkımızda
                   </Link>
                   <Link
-                    href="#"
+                    href="/insan-kaynaklari"
                     className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
                   >
                     İnsan Kaynakları
                   </Link>
                   <Link
-                    href="#"
+                    href="/yatirimci-iliskileri"
                     className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
                   >
                     Yatırımcı İlişkileri
@@ -399,19 +399,19 @@ export default function Header() {
               {activeDropdown === "hizmetler" && (
                 <div className="pl-4 space-y-1">
                   <Link
-                    href="#"
+                    href="/kurumsal-finansman"
                     className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
                   >
                     Kurumsal Finansman
                   </Link>
                   <Link
-                    href="#"
+                    href="/yatirim-danismanligi"
                     className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
                   >
                     Yatırım Danışmanlığı
                   </Link>
                   <Link
-                    href="#"
+                    href="/portfoy-yonetimi"
                     className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
                   >
                     Portföy Yönetimi

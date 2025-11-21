@@ -51,12 +51,12 @@ Uygulama `http://localhost:3000` adresinde çalışacaktır.
 ### Test Hesapları
 
 **Admin**
-- Email: `admin@local`
-- Şifre: `Admin123!`
+- Email: `admin@local.com`
+- Şifre: `Admin123`
 
 **Kullanıcı**
-- Email: `test@local`
-- Şifre: `Test123!`
+- Email: `test@local.com`
+- Şifre: `Test123`
 - Bakiye: $10,000
 
 ## 📚 Dokumentasyon
