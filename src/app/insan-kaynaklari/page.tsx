@@ -31,17 +31,17 @@ export default function InsanKaynaklariPage() {
 
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('email', formData.email);
-      formDataToSend.append('phone', formData.phone);
-      formDataToSend.append('position', formData.position);
-      formDataToSend.append('coverLetter', formData.coverLetter);
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("phone", formData.phone);
+      formDataToSend.append("position", formData.position);
+      formDataToSend.append("coverLetter", formData.coverLetter);
       if (formData.cv) {
-        formDataToSend.append('cv', formData.cv);
+        formDataToSend.append("cv", formData.cv);
       }
 
-      const response = await fetch('/api/job-applications', {
-        method: 'POST',
+      const response = await fetch("/api/job-applications", {
+        method: "POST",
         body: formDataToSend,
       });
 
@@ -61,11 +61,11 @@ export default function InsanKaynaklariPage() {
           });
         }, 5000);
       } else {
-        setError(result.error || 'Başvuru gönderilirken bir hata oluştu');
+        setError(result.error || "Başvuru gönderilirken bir hata oluştu");
       }
     } catch (err) {
-      setError('Başvuru gönderilirken bir hata oluştu. Lütfen tekrar deneyin.');
-      console.error('Application submission error:', err);
+      setError("Başvuru gönderilirken bir hata oluştu. Lütfen tekrar deneyin.");
+      console.error("Application submission error:", err);
     } finally {
       setSubmitting(false);
     }
@@ -661,7 +661,7 @@ export default function InsanKaynaklariPage() {
                     disabled={submitting}
                     className="w-full bg-green-700 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-800 transition-colors duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none"
                   >
-                    {submitting ? 'Gönderiliyor...' : 'Başvuruyu Gönder'}
+                    {submitting ? "Gönderiliyor..." : "Başvuruyu Gönder"}
                   </button>
 
                   {error && (
