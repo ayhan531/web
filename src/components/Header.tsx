@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import MarketTicker from './MarketTicker';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import MarketTicker from "./MarketTicker";
 
 interface MarketData {
   symbol: string;
@@ -23,42 +23,74 @@ export default function Header() {
     const fetchData = async () => {
       counter++;
       try {
-        const response = await fetch('/api/bist/stocks?limit=5');
-        const data = await response.json();
+        const response = await fetch("/api/bist/stocks?limit=5");
 
-        const formattedData = data.map((stock: any) => ({
-          symbol: stock.symbol,
-          name: stock.name,
-          price: stock.price,
-          changePercent: stock.changePercent,
-        }));
+        // If server returned non-OK, attempt to read body for debugging
+        if (!response.ok) {
+          const text = await response.text().catch(() => null);
+          console.error("BIST stocks fetch failed:", response.status, text);
+          generateDummyData();
+          return;
+        }
 
-        setMarketData(formattedData);
+        const contentType = response.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+          // Received HTML (likely a dev overlay or error page) — log it for debugging
+          const text = await response.text().catch(() => "<unreadable body>");
+          console.error("Expected JSON but received:", text.slice(0, 100));
+          generateDummyData();
+          return;
+        }
+
+        let data: any;
+        try {
+          data = await response.json();
+        } catch (err) {
+          console.error("Failed to parse JSON from /api/bist/stocks:", err);
+          const text = await response.text().catch(() => null);
+          console.error("Response body:", text);
+          generateDummyData();
+          return;
+        }
+
+        const formattedData = (Array.isArray(data) ? data : []).map(
+          (stock: any) => ({
+            symbol: stock.symbol,
+            name: stock.name,
+            price: stock.price,
+            changePercent: stock.changePercent,
+          })
+        );
+
+        setMarketData(formattedData.length ? formattedData : []);
       } catch (error) {
-        console.error('API hatası:', error);
+        console.error("API hatası:", error);
         generateDummyData();
       }
     };
 
     const generateDummyData = () => {
       const dummyStocks = [
-        { symbol: 'THYAO', name: 'Türk Hava Yolları', basePrice: 269.50 },
-        { symbol: 'AKBNK', name: 'Akbank', basePrice: 58.90 },
-        { symbol: 'GARAN', name: 'Garanti BBVA', basePrice: 129.80 },
-        { symbol: 'ASELS', name: 'Aselsan', basePrice: 67.80 },
-        { symbol: 'BIMAS', name: 'BİM', basePrice: 245.60 },
+        { symbol: "THYAO", name: "Türk Hava Yolları", basePrice: 269.5 },
+        { symbol: "AKBNK", name: "Akbank", basePrice: 58.9 },
+        { symbol: "GARAN", name: "Garanti BBVA", basePrice: 129.8 },
+        { symbol: "ASELS", name: "Aselsan", basePrice: 67.8 },
+        { symbol: "BIMAS", name: "BİM", basePrice: 245.6 },
       ];
 
       const dummyData = dummyStocks.map((stock) => {
         const deviation = (Math.random() - 0.5) * 0.002;
         const price = stock.basePrice * (1 + deviation);
-        const changePercent = ((price - stock.basePrice) / stock.basePrice) * 100;
+        const changePercent =
+          ((price - stock.basePrice) / stock.basePrice) * 100;
 
         return {
           symbol: stock.symbol,
           name: stock.name,
           price: price.toFixed(2),
-          changePercent: `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`,
+          changePercent: `${
+            changePercent >= 0 ? "+" : ""
+          }${changePercent.toFixed(2)}%`,
         };
       });
 
@@ -86,8 +118,11 @@ export default function Header() {
       <nav className="container mx-auto px-4 py-0">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 font-bold text-lg text-gray-900 hover:text-green-700 transition">
-            <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-green-700 rounded flex items-center justify-center text-white font-bold text-sm">
+          <Link
+            href="/"
+            className="flex items-center space-x-2 font-bold text-lg text-gray-900 hover:text-green-700 transition"
+          >
+            <div className="w-8 h-8 bg-linear-to-br from-green-600 to-green-700 rounded flex items-center justify-center text-white font-bold text-sm">
               YP
             </div>
             <span className="hidden sm:inline text-gray-900">YatırımPRO</span>
@@ -101,9 +136,24 @@ export default function Header() {
                 Bizi Tanıyın
               </button>
               <div className="absolute left-0 mt-0 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-10 border border-gray-200">
-                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Hakkımızda</Link>
-                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">İnsan Kaynakları</Link>
-                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Yatırımcı İlişkileri</Link>
+                <Link
+                  href="#"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  Hakkımızda
+                </Link>
+                <Link
+                  href="#"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  İnsan Kaynakları
+                </Link>
+                <Link
+                  href="#"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  Yatırımcı İlişkileri
+                </Link>
               </div>
             </div>
 
@@ -113,9 +163,24 @@ export default function Header() {
                 Hizmetler
               </button>
               <div className="absolute left-0 mt-0 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-10 border border-gray-200">
-                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Kurumsal Finansman</Link>
-                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Yatırım Danışmanlığı</Link>
-                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Portföy Yönetimi</Link>
+                <Link
+                  href="#"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  Kurumsal Finansman
+                </Link>
+                <Link
+                  href="#"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  Yatırım Danışmanlığı
+                </Link>
+                <Link
+                  href="#"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  Portföy Yönetimi
+                </Link>
               </div>
             </div>
 
@@ -125,10 +190,30 @@ export default function Header() {
                 Ürünler
               </button>
               <div className="absolute left-0 mt-0 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-10 border border-gray-200">
-                <Link href="/borsa" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Pay Piyasası</Link>
-                <Link href="/doviz" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Döviz</Link>
-                <Link href="/altin" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Altın</Link>
-                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Yatırım Fonları</Link>
+                <Link
+                  href="/borsa"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  Pay Piyasası
+                </Link>
+                <Link
+                  href="/doviz"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  Döviz
+                </Link>
+                <Link
+                  href="/altin"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  Altın
+                </Link>
+                <Link
+                  href="#"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  Yatırım Fonları
+                </Link>
               </div>
             </div>
 
@@ -138,10 +223,30 @@ export default function Header() {
                 Analiz
               </button>
               <div className="absolute left-0 mt-0 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-10 border border-gray-200">
-                <Link href="/analiz" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Analiz Özet</Link>
-                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Hisse Senetleri</Link>
-                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Araştırma Raporları</Link>
-                <Link href="/haberler" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Haberler</Link>
+                <Link
+                  href="/analiz"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  Analiz Özet
+                </Link>
+                <Link
+                  href="#"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  Hisse Senetleri
+                </Link>
+                <Link
+                  href="#"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  Araştırma Raporları
+                </Link>
+                <Link
+                  href="/haberler"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  Haberler
+                </Link>
               </div>
             </div>
 
@@ -151,10 +256,30 @@ export default function Header() {
                 Platformlar
               </button>
               <div className="absolute left-0 mt-0 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-10 border border-gray-200">
-                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">TradeMaster Mobile</Link>
-                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">TradeMaster WEB</Link>
-                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">TradeMaster Masaüstü</Link>
-                <Link href="#" className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium">Herkese Borsa</Link>
+                <Link
+                  href="#"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  TradeMaster Mobile
+                </Link>
+                <Link
+                  href="#"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  TradeMaster WEB
+                </Link>
+                <Link
+                  href="#"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  TradeMaster Masaüstü
+                </Link>
+                <Link
+                  href="#"
+                  className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
+                >
+                  Herkese Borsa
+                </Link>
               </div>
             </div>
           </div>
@@ -169,7 +294,7 @@ export default function Header() {
             </Link>
             <Link
               href="/kayit"
-              className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-green-600 to-green-700 px-6 py-2 text-sm font-semibold text-white shadow-lg transition-all hover:shadow-xl hover:from-green-700 hover:to-green-800"
+              className="inline-flex items-center justify-center rounded-lg bg-linear-to-r from-green-600 to-green-700 px-6 py-2 text-sm font-semibold text-white shadow-lg transition-all hover:shadow-xl hover:from-green-700 hover:to-green-800"
             >
               Kayıt Ol
             </Link>
@@ -179,8 +304,18 @@ export default function Header() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-100 transition"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               </svg>
             </button>
           </div>
@@ -191,69 +326,186 @@ export default function Header() {
           <div className="lg:hidden pb-4 border-t border-gray-200">
             <div className="space-y-1">
               <button
-                onClick={() => setActiveDropdown(activeDropdown === 'bizi' ? null : 'bizi')}
+                onClick={() =>
+                  setActiveDropdown(activeDropdown === "bizi" ? null : "bizi")
+                }
                 className="w-full text-left px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md flex items-center justify-between"
               >
                 Bizi Tanıyın
-                <svg className={`w-4 h-4 transition-transform ${activeDropdown === 'bizi' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                <svg
+                  className={`w-4 h-4 transition-transform ${
+                    activeDropdown === "bizi" ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                  />
                 </svg>
               </button>
-              {activeDropdown === 'bizi' && (
+              {activeDropdown === "bizi" && (
                 <div className="pl-4 space-y-1">
-                  <Link href="#" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Hakkımızda</Link>
-                  <Link href="#" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">İnsan Kaynakları</Link>
-                  <Link href="#" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Yatırımcı İlişkileri</Link>
+                  <Link
+                    href="#"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
+                  >
+                    Hakkımızda
+                  </Link>
+                  <Link
+                    href="#"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
+                  >
+                    İnsan Kaynakları
+                  </Link>
+                  <Link
+                    href="#"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
+                  >
+                    Yatırımcı İlişkileri
+                  </Link>
                 </div>
               )}
 
               <button
-                onClick={() => setActiveDropdown(activeDropdown === 'hizmetler' ? null : 'hizmetler')}
+                onClick={() =>
+                  setActiveDropdown(
+                    activeDropdown === "hizmetler" ? null : "hizmetler"
+                  )
+                }
                 className="w-full text-left px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md flex items-center justify-between"
               >
                 Hizmetler
-                <svg className={`w-4 h-4 transition-transform ${activeDropdown === 'hizmetler' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                <svg
+                  className={`w-4 h-4 transition-transform ${
+                    activeDropdown === "hizmetler" ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                  />
                 </svg>
               </button>
-              {activeDropdown === 'hizmetler' && (
+              {activeDropdown === "hizmetler" && (
                 <div className="pl-4 space-y-1">
-                  <Link href="#" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Kurumsal Finansman</Link>
-                  <Link href="#" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Yatırım Danışmanlığı</Link>
-                  <Link href="#" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Portföy Yönetimi</Link>
+                  <Link
+                    href="#"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
+                  >
+                    Kurumsal Finansman
+                  </Link>
+                  <Link
+                    href="#"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
+                  >
+                    Yatırım Danışmanlığı
+                  </Link>
+                  <Link
+                    href="#"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
+                  >
+                    Portföy Yönetimi
+                  </Link>
                 </div>
               )}
 
               <button
-                onClick={() => setActiveDropdown(activeDropdown === 'urunler' ? null : 'urunler')}
+                onClick={() =>
+                  setActiveDropdown(
+                    activeDropdown === "urunler" ? null : "urunler"
+                  )
+                }
                 className="w-full text-left px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md flex items-center justify-between"
               >
                 Ürünler
-                <svg className={`w-4 h-4 transition-transform ${activeDropdown === 'urunler' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                <svg
+                  className={`w-4 h-4 transition-transform ${
+                    activeDropdown === "urunler" ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                  />
                 </svg>
               </button>
-              {activeDropdown === 'urunler' && (
+              {activeDropdown === "urunler" && (
                 <div className="pl-4 space-y-1">
-                  <Link href="/borsa" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Pay Piyasası</Link>
-                  <Link href="/doviz" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Döviz</Link>
-                  <Link href="/altin" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Altın</Link>
+                  <Link
+                    href="/borsa"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
+                  >
+                    Pay Piyasası
+                  </Link>
+                  <Link
+                    href="/doviz"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
+                  >
+                    Döviz
+                  </Link>
+                  <Link
+                    href="/altin"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
+                  >
+                    Altın
+                  </Link>
                 </div>
               )}
 
               <button
-                onClick={() => setActiveDropdown(activeDropdown === 'analiz' ? null : 'analiz')}
+                onClick={() =>
+                  setActiveDropdown(
+                    activeDropdown === "analiz" ? null : "analiz"
+                  )
+                }
                 className="w-full text-left px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md flex items-center justify-between"
               >
                 Analiz
-                <svg className={`w-4 h-4 transition-transform ${activeDropdown === 'analiz' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                <svg
+                  className={`w-4 h-4 transition-transform ${
+                    activeDropdown === "analiz" ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                  />
                 </svg>
               </button>
-              {activeDropdown === 'analiz' && (
+              {activeDropdown === "analiz" && (
                 <div className="pl-4 space-y-1">
-                  <Link href="/analiz" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Analiz Özet</Link>
-                  <Link href="/haberler" className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600">Haberler</Link>
+                  <Link
+                    href="/analiz"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
+                  >
+                    Analiz Özet
+                  </Link>
+                  <Link
+                    href="/haberler"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
+                  >
+                    Haberler
+                  </Link>
                 </div>
               )}
             </div>
