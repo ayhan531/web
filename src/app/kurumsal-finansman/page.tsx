@@ -10,6 +10,12 @@ import {
   TrophyIcon,
   ClockIcon,
   CheckCircleIcon,
+  ShoppingCartIcon,
+  BoltIcon,
+  BuildingOffice2Icon,
+  ComputerDesktopIcon,
+  TruckIcon,
+  BuildingLibraryIcon,
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
@@ -44,37 +50,37 @@ export default function KurumsalFinansmanPage() {
     {
       title: "Tüketim Ürünleri",
       description: "Perakende, gıda, içecek ve tüketim malları sektörü",
-      icon: "🛒",
+      icon: ShoppingCartIcon,
     },
     {
       title: "Enerji, İnşaat ve Madencilik",
       description: "Enerji üretimi, altyapı ve maden işletmeciliği",
-      icon: "⚡",
+      icon: BoltIcon,
     },
     {
       title: "Temel Endüstriler",
       description: "Üretim, kimya, çelik ve temel sanayi",
-      icon: "🏭",
+      icon: BuildingOffice2Icon,
     },
     {
       title: "Teknoloji, Medya ve Telekomünikasyon",
       description: "IT, yazılım, medya ve telekomünikasyon hizmetleri",
-      icon: "💻",
+      icon: ComputerDesktopIcon,
     },
     {
       title: "Finansal Hizmetler ve Gayrimenkul",
       description: "Bankacılık, sigorta ve gayrimenkul geliştirme",
-      icon: "🏦",
+      icon: BuildingLibraryIcon,
     },
     {
       title: "Ulaştırma ve Lojistik",
       description: "Taşımacılık, lojistik ve depolama hizmetleri",
-      icon: "🚚",
+      icon: TruckIcon,
     },
     {
       title: "Hizmetler ve Sağlık",
       description: "Sağlık hizmetleri, eğitim ve diğer hizmet sektörleri",
-      icon: "🏥",
+      icon: BuildingOffice2Icon,
     },
   ];
 
@@ -335,9 +341,7 @@ export default function KurumsalFinansmanPage() {
                     key={index}
                     className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 group cursor-pointer hover:border-green-300"
                   >
-                    <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                      {sector.icon}
-                    </div>
+                    <sector.icon className="w-12 h-12 text-green-700 mb-4 group-hover:scale-110 transition-transform duration-300" />
                     <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-green-700 transition-colors">
                       {sector.title}
                     </h3>

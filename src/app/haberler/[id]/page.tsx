@@ -3,6 +3,17 @@
 import { useParams } from 'next/navigation';
 import Header from '@/components/Header';
 import Reveal from '@/components/Reveal';
+import { 
+  CurrencyDollarIcon, 
+  TrophyIcon, 
+  ArrowTrendingUpIcon, 
+  EyeIcon, 
+  ChatBubbleLeftIcon, 
+  HandThumbUpIcon, 
+  LinkIcon, 
+  BookmarkIcon, 
+  UserIcon 
+} from '@heroicons/react/24/outline';
 
 export default function HaberDetayPage() {
   const params = useParams();
@@ -28,15 +39,15 @@ export default function HaberDetayPage() {
     author: 'Ekonomi Editörü',
     date: '6 Kasım 2024',
     category: 'Ekonomi',
-    image: '💰',
+    image: CurrencyDollarIcon,
     views: 1250,
     comments: 45,
   };
 
   const relatedNews = [
-    { id: 2, title: 'Altın Fiyatları Rekor Kırdı', date: '6 Kasım 2024', icon: '🥇' },
-    { id: 3, title: 'BIST 100 Endeksi 10.000 Puanı Test Ediyor', date: '5 Kasım 2024', icon: '📈' },
-    { id: 4, title: 'Kripto Para Piyasalarında Hareketli Günler', date: '5 Kasım 2024', icon: '₿' },
+    { id: 2, title: 'Altın Fiyatları Rekor Kırdı', date: '6 Kasım 2024', icon: TrophyIcon },
+    { id: 3, title: 'BIST 100 Endeksi 10.000 Puanı Test Ediyor', date: '5 Kasım 2024', icon: ArrowTrendingUpIcon },
+    { id: 4, title: 'Kripto Para Piyasalarında Hareketli Günler', date: '5 Kasım 2024', icon: ArrowTrendingUpIcon },
   ];
 
   return (
@@ -48,7 +59,7 @@ export default function HaberDetayPage() {
             {/* Header */}
             <div className="mb-8">
               <div className="flex items-center gap-2 mb-4">
-                <span className="text-4xl">{haber.image}</span>
+                <haber.image className="w-12 h-12 text-[var(--primary)]" />
                 <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
                   {haber.category}
                 </span>
@@ -60,8 +71,8 @@ export default function HaberDetayPage() {
                   <p className="text-sm">{haber.date}</p>
                 </div>
                 <div className="flex gap-4 text-sm">
-                  <span>👁️ {haber.views} görüntüleme</span>
-                  <span>💬 {haber.comments} yorum</span>
+                  <span className="flex items-center gap-1"><EyeIcon className="w-4 h-4" /> {haber.views} görüntüleme</span>
+                  <span className="flex items-center gap-1"><ChatBubbleLeftIcon className="w-4 h-4" /> {haber.comments} yorum</span>
                 </div>
               </div>
             </div>
@@ -79,13 +90,13 @@ export default function HaberDetayPage() {
             <Reveal delayMs={200}>
               <div className="flex gap-4 mb-12 pb-12 border-b">
                 <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition">
-                  👍 Beğen
+                  <HandThumbUpIcon className="w-5 h-5" /> Beğen
                 </button>
                 <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 transition">
-                  🔗 Paylaş
+                  <LinkIcon className="w-5 h-5" /> Paylaş
                 </button>
                 <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 transition">
-                  🔖 Kaydet
+                  <BookmarkIcon className="w-5 h-5" /> Kaydet
                 </button>
               </div>
             </Reveal>
@@ -100,7 +111,7 @@ export default function HaberDetayPage() {
                       key={news.id}
                       className="p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition cursor-pointer"
                     >
-                      <div className="text-3xl mb-2">{news.icon}</div>
+                      <news.icon className="w-8 h-8 text-[var(--primary)] mb-2" />
                       <h3 className="font-semibold mb-2 line-clamp-2">{news.title}</h3>
                       <p className="text-xs text-gray-600">{news.date}</p>
                     </div>
@@ -117,7 +128,7 @@ export default function HaberDetayPage() {
                   <div className="p-4 rounded-lg bg-gray-50">
                     <div className="flex items-start gap-3">
                       <div className="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center">
-                        👤
+                        <UserIcon className="w-6 h-6 text-blue-700" />
                       </div>
                       <div className="flex-1">
                         <p className="font-semibold">Yatırımcı Ali</p>
@@ -131,7 +142,7 @@ export default function HaberDetayPage() {
                   <div className="p-4 rounded-lg bg-gray-50">
                     <div className="flex items-start gap-3">
                       <div className="w-10 h-10 rounded-full bg-green-200 flex items-center justify-center">
-                        👤
+                        <UserIcon className="w-6 h-6 text-green-700" />
                       </div>
                       <div className="flex-1">
                         <p className="font-semibold">Trader Ayşe</p>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { DocumentIcon, TableCellsIcon, PrinterIcon } from '@heroicons/react/24/outline';
 
 export default function ReportsPage() {
   const [selectedReport, setSelectedReport] = useState('monthly');
@@ -133,14 +134,14 @@ export default function ReportsPage() {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
             <h2 className="text-xl font-bold mb-4">Raporu İndir</h2>
             <div className="flex gap-2">
-              <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                📄 PDF İndir
+              <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+                <DocumentIcon className="w-5 h-5" /> PDF İndir
               </button>
-              <button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                📊 Excel İndir
+              <button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center gap-2">
+                <TableCellsIcon className="w-5 h-5" /> Excel İndir
               </button>
-              <button className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
-                🖨️ Yazdır
+              <button className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center gap-2">
+                <PrinterIcon className="w-5 h-5" /> Yazdır
               </button>
             </div>
           </div>

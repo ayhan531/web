@@ -3,25 +3,26 @@
 import Header from '@/components/Header';
 import Reveal from '@/components/Reveal';
 import VideoCard from '@/components/VideoCard';
+import { ChartBarIcon, ArrowTrendingUpIcon, FlagIcon } from '@heroicons/react/24/outline';
 
 export default function AnalizPage() {
   const cards = [
     { 
       title: 'Teknik Analiz', 
       desc: 'Grafik formasyonları, destek-direnç seviyeleri, RSI, MACD ve Fibonacci analizleri ile piyasa trendlerini takip edin.',
-      icon: '📊',
+      icon: ChartBarIcon,
       topics: ['Grafik Formasyonları', 'İndikatörler', 'Fibonacci Seviyeleri']
     },
     { 
       title: 'Temel Analiz', 
       desc: 'Şirket bilançoları, F/K oranları, sektör analizleri ve makroekonomik göstergeler ışığında yatırım fırsatlarını keşfedin.',
-      icon: '📈',
+      icon: ArrowTrendingUpIcon,
       topics: ['Bilanço Analizi', 'Sektör Raporları', 'Makro Veriler']
     },
     { 
       title: 'Piyasa Stratejisi', 
       desc: 'Günlük, haftalık ve aylık piyasa görünümü, uzman yorumları ve risk yönetimi stratejileri.',
-      icon: '🎯',
+      icon: FlagIcon,
       topics: ['Günlük Bülten', 'Haftalık Görünüm', 'Risk Yönetimi']
     },
   ];
@@ -39,7 +40,7 @@ export default function AnalizPage() {
           {cards.map((c, i) => (
             <Reveal key={c.title} delayMs={i * 100}>
               <div className="lift rounded-lg bg-[var(--surface)] p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div className="text-4xl mb-4">{c.icon}</div>
+                <c.icon className="w-12 h-12 text-[var(--primary)] mb-4" />
                 <h3 className="text-xl font-semibold">{c.title}</h3>
                 <p className="mt-2 text-sm text-[var(--text-light)]">{c.desc}</p>
                 <div className="mt-4 space-y-2">

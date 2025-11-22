@@ -257,7 +257,7 @@ export default function InsanKaynaklariPage() {
           <div className="max-w-5xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="bg-green-50 p-8 rounded-2xl border border-green-200">
-                <div className="text-4xl mb-4">💼</div>
+                <BriefcaseIcon className="w-10 h-10 text-green-600 mb-4" />
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
                   Ücret Politikası ve Yan Haklar
                 </h3>
@@ -328,7 +328,7 @@ export default function InsanKaynaklariPage() {
               </div>
 
               <div className="bg-green-50 p-8 rounded-2xl border border-green-200">
-                <div className="text-4xl mb-4">📈</div>
+                <ChartBarIcon className="w-10 h-10 text-green-600 mb-4" />
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
                   Performans ve Kariyer Yönetimi
                 </h3>
@@ -399,7 +399,7 @@ export default function InsanKaynaklariPage() {
             </div>
 
             <div className="mt-8 bg-green-50 p-8 rounded-2xl border border-green-200">
-              <div className="text-4xl mb-4">🎓</div>
+              <AcademicCapIcon className="w-10 h-10 text-green-600 mb-4" />
               <h3 className="text-2xl font-bold text-gray-900 mb-4">
                 Eğitim ve Gelişim
               </h3>
@@ -471,10 +471,10 @@ export default function InsanKaynaklariPage() {
                             {position.department}
                           </span>
                           <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
-                            📍 {position.location}
+                            {position.location}
                           </span>
                           <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold">
-                            ⏰ {position.type}
+                            {position.type}
                           </span>
                         </div>
                       </div>

@@ -9,6 +9,7 @@ import {
   ShieldCheckIcon,
   ClockIcon,
   PhoneIcon,
+  GlobeAltIcon,
 } from "@heroicons/react/24/outline";
 
 export default function YatirimDanismanligiPage() {
@@ -51,7 +52,7 @@ export default function YatirimDanismanligiPage() {
       title: "VİOP",
       description:
         "Piyasalar yükselirken de düşerken de kaldıraçlı yatırım imkanı sunan vadeli işlem ve opsiyon sözleşmeleri.",
-      icon: "📊",
+      icon: ChartBarIcon,
       color: "from-purple-500 to-purple-600",
       link: "#",
     },
@@ -59,7 +60,7 @@ export default function YatirimDanismanligiPage() {
       title: "Eurobond",
       description:
         "Uzun vadeli yabancı para cinsinden yatırım düşünenler için uygun yatırım aracı.",
-      icon: "🌍",
+      icon: GlobeAltIcon,
       color: "from-green-500 to-green-600",
       link: "#",
     },
@@ -67,7 +68,7 @@ export default function YatirimDanismanligiPage() {
       title: "Yurtdışı Hisse ve Future",
       description:
         "Küresel piyasalarda stratejinize en uygun yatırım araçları.",
-      icon: "🌐",
+      icon: GlobeAltIcon,
       color: "from-orange-500 to-orange-600",
       link: "#",
     },
@@ -335,11 +336,7 @@ export default function YatirimDanismanligiPage() {
                 ></div>
                 <div className="relative p-8 text-white">
                   <div className="flex items-center mb-4">
-                    {typeof service.icon === "string" ? (
-                      <div className="text-5xl mr-4">{service.icon}</div>
-                    ) : (
-                      <service.icon className="w-12 h-12 mr-4" />
-                    )}
+                    <service.icon className="w-12 h-12 mr-4" />
                     <h3 className="text-2xl font-bold">{service.title}</h3>
                   </div>
                   <p className="text-white/90 leading-relaxed mb-4">

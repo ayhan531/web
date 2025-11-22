@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import type { Banner, News, Market } from "@/types";
 import Reveal from "@/components/Reveal";
 import BannerSlider from "@/components/BannerSlider";
+import { ArrowTrendingUpIcon, ArrowTrendingDownIcon, NewspaperIcon, DevicePhoneMobileIcon, GlobeAltIcon, ComputerDesktopIcon, RocketLaunchIcon, BoltIcon } from "@heroicons/react/24/outline";
 
 function MarketCard({ market }: { market: Market }) {
   const isPositive = market.change.startsWith("+");
@@ -36,7 +37,7 @@ function MarketCard({ market }: { market: Market }) {
           {market.price}
         </div>
         <div className="text-xs text-[var(--text-light)]">
-          {isPositive ? "📈" : "📉"}
+          {isPositive ? <ArrowTrendingUpIcon className="w-5 h-5" /> : <ArrowTrendingDownIcon className="w-5 h-5" />}
         </div>
       </div>
     </div>
@@ -47,7 +48,7 @@ function NewsCard({ news }: { news: News }) {
   return (
     <div className="lift rounded-lg bg-[var(--surface)] p-5 shadow-sm transition hover:shadow-lg border border-[var(--border-color)] h-full flex flex-col">
       <div className="flex items-start gap-3 mb-3">
-        <div className="text-2xl">📰</div>
+        <NewspaperIcon className="w-6 h-6 text-[var(--primary)]" />
         <div className="flex-1">
           <h3 className="font-bold text-lg mb-2 line-clamp-2">{news.title}</h3>
         </div>
@@ -172,7 +173,7 @@ export default function Home() {
           <Reveal delayMs={400}>
             <div className="mt-8 rounded-lg bg-gradient-to-r from-green-50 to-green-100 p-5 text-center border border-green-200">
               <p className="text-sm text-green-800 font-medium">
-                ⚡ Veriler BIST'ten anlık olarak güncellenmektedir • Son
+                <BoltIcon className="w-4 h-4 inline" /> Veriler BIST'ten anlık olarak güncellenmektedir • Son
                 güncelleme: {new Date().toLocaleTimeString("tr-TR")}
               </p>
             </div>
@@ -315,8 +316,8 @@ export default function Home() {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
               <Reveal delayMs={0}>
                 <div className="rounded-xl bg-white p-7 shadow-lg hover:shadow-2xl transition border border-gray-200 hover:border-green-300 group">
-                  <div className="text-5xl mb-4 group-hover:scale-110 transition">
-                    📱
+                  <div className="mb-4 group-hover:scale-110 transition">
+                    <DevicePhoneMobileIcon className="w-12 h-12 text-[var(--primary)]" />
                   </div>
                   <h3 className="font-bold text-lg mb-3 text-gray-900">
                     TradeMaster Mobile
@@ -329,8 +330,8 @@ export default function Home() {
               </Reveal>
               <Reveal delayMs={100}>
                 <div className="rounded-xl bg-white p-7 shadow-lg hover:shadow-2xl transition border border-gray-200 hover:border-green-300 group">
-                  <div className="text-5xl mb-4 group-hover:scale-110 transition">
-                    🌐
+                  <div className="mb-4 group-hover:scale-110 transition">
+                    <GlobeAltIcon className="w-12 h-12 text-[var(--primary)]" />
                   </div>
                   <h3 className="font-bold text-lg mb-3 text-gray-900">
                     TradeMaster WEB
@@ -343,8 +344,8 @@ export default function Home() {
               </Reveal>
               <Reveal delayMs={200}>
                 <div className="rounded-xl bg-white p-7 shadow-lg hover:shadow-2xl transition border border-gray-200 hover:border-green-300 group">
-                  <div className="text-5xl mb-4 group-hover:scale-110 transition">
-                    💻
+                  <div className="mb-4 group-hover:scale-110 transition">
+                    <ComputerDesktopIcon className="w-12 h-12 text-[var(--primary)]" />
                   </div>
                   <h3 className="font-bold text-lg mb-3 text-gray-900">
                     TradeMaster Masaüstü
@@ -356,8 +357,8 @@ export default function Home() {
               </Reveal>
               <Reveal delayMs={300}>
                 <div className="rounded-xl bg-white p-7 shadow-lg hover:shadow-2xl transition border border-gray-200 hover:border-green-300 group">
-                  <div className="text-5xl mb-4 group-hover:scale-110 transition">
-                    🚀
+                  <div className="mb-4 group-hover:scale-110 transition">
+                    <RocketLaunchIcon className="w-12 h-12 text-[var(--primary)]" />
                   </div>
                   <h3 className="font-bold text-lg mb-3 text-gray-900">
                     Herkese Borsa

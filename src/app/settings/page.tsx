@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { ArrowDownTrayIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState({
@@ -194,12 +195,12 @@ export default function SettingsPage() {
       <div className="flex gap-2">
         <button
           onClick={handleSave}
-          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 flex items-center gap-2"
         >
-          💾 Kaydet
+          <ArrowDownTrayIcon className="w-5 h-5" /> Kaydet
         </button>
-        <button className="bg-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-400">
-          ↺ Sıfırla
+        <button className="bg-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-400 flex items-center gap-2">
+          <ArrowPathIcon className="w-5 h-5" /> Sıfırla
         </button>
       </div>
     </div>

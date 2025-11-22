@@ -2,6 +2,13 @@
 
 import Header from '@/components/Header';
 import Reveal from '@/components/Reveal';
+import { 
+  CurrencyDollarIcon, 
+  TrophyIcon, 
+  ArrowTrendingUpIcon, 
+  BuildingLibraryIcon, 
+  ChartBarIcon 
+} from '@heroicons/react/24/outline';
 
 export default function HaberlerPage() {
   const items = [
@@ -11,7 +18,7 @@ export default function HaberlerPage() {
       excerpt: 'Merkez Bankası\'nın faiz kararı sonrası dolar/TL kurunda hareketlilik yaşandı. Uzmanlar önümüzdeki dönem için değerlendirmelerini paylaştı.',
       date: '6 Kasım 2024',
       category: 'Ekonomi',
-      icon: '💰'
+      icon: CurrencyDollarIcon
     },
     {
       id: 2,
@@ -19,7 +26,7 @@ export default function HaberlerPage() {
       excerpt: 'Küresel piyasalardaki belirsizlikler ve güvenli liman arayışı gram altın fiyatlarını tarihi zirveye taşıdı.',
       date: '6 Kasım 2024',
       category: 'Altın',
-      icon: '🥇'
+      icon: TrophyIcon
     },
     {
       id: 3,
@@ -27,7 +34,7 @@ export default function HaberlerPage() {
       excerpt: 'Borsa İstanbul\'da yükseliş trendi devam ediyor. Bankacılık ve holding hisseleri endeksi yukarı taşıyor.',
       date: '5 Kasım 2024',
       category: 'Borsa',
-      icon: '📈'
+      icon: ArrowTrendingUpIcon
     },
     {
       id: 4,
@@ -35,7 +42,7 @@ export default function HaberlerPage() {
       excerpt: 'Bitcoin 70.000 dolar direncini test ederken, Ethereum\'da da yükseliş beklentileri artıyor.',
       date: '5 Kasım 2024',
       category: 'Kripto',
-      icon: '₿'
+      icon: ChartBarIcon
     },
     {
       id: 5,
@@ -43,7 +50,7 @@ export default function HaberlerPage() {
       excerpt: 'BDDK\'nın yeni kararı ile döviz tevdiat hesaplarında faiz oranları güncellendi.',
       date: '4 Kasım 2024',
       category: 'Bankacılık',
-      icon: '🏦'
+      icon: BuildingLibraryIcon
     },
     {
       id: 6,
@@ -51,7 +58,7 @@ export default function HaberlerPage() {
       excerpt: 'TÜİK\'in kasım ayı enflasyon rakamları beklentilerin üzerinde geldi. Gıda ve enerji fiyatları öne çıktı.',
       date: '4 Kasım 2024',
       category: 'Ekonomi',
-      icon: '📊'
+      icon: ChartBarIcon
     },
   ];
 
@@ -69,7 +76,7 @@ export default function HaberlerPage() {
             <Reveal key={n.id} delayMs={i * 80}>
               <article className="lift rounded-lg bg-[var(--surface)] p-6 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-start gap-4">
-                  <div className="text-3xl">{n.icon}</div>
+                  <n.icon className="w-10 h-10 text-[var(--primary)] flex-shrink-0" />
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="rounded-full bg-[var(--primary)] bg-opacity-10 px-2 py-1 text-xs font-medium text-[var(--primary)]">
