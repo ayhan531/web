@@ -79,22 +79,27 @@ export default function Home() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/banners").then((res) => res.json()),
-      fetch("/api/news").then((res) => res.json()),
-      fetch("/api/bist/stocks?limit=9").then((res) => res.json()),
-    ]).then(([bannersData, newsData, stocksData]) => {
-      setBanners(bannersData);
-      setNews(newsData);
-      // BIST hisselerini Market formatına dönüştür
-      const formattedMarkets = stocksData.map((stock: any) => ({
-        id: stock.symbol,
-        symbol: stock.symbol,
-        price: stock.price + " ₺",
-        change: stock.changePercent,
-      }));
-      setMarkets(formattedMarkets);
-      setLoading(false);
-    });
+      fetch("/api/banners").then((res) => res.json()).catch(() => []),
+      fetch("/api/news").then((res) => res.json()).catch(() => []),
+      fetch("/api/bist/stocks?limit=9").then((res) => res.json()).catch(() => []),
+    ])
+      .then(([bannersData, newsData, stocksData]) => {
+        setBanners(Array.isArray(bannersData) ? bannersData : []);
+        setNews(Array.isArray(newsData) ? newsData : []);
+        // BIST hisselerini Market formatına dönüştür
+        const formattedMarkets = Array.isArray(stocksData) ? stocksData.map((stock: any) => ({
+          id: stock.symbol,
+          symbol: stock.symbol,
+          price: stock.price + " ₺",
+          change: stock.changePercent,
+        })) : [];
+        setMarkets(formattedMarkets);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error loading data:", err);
+        setLoading(false);
+      });
   }, []);
 
   if (loading) {
