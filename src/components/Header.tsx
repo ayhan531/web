@@ -209,7 +209,7 @@ export default function Header() {
                   Altın
                 </Link>
                 <Link
-                  href="#"
+                  href="/yatirim-fonlari"
                   className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium"
                 >
                   Yatırım Fonları
@@ -463,6 +463,12 @@ export default function Header() {
                     className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
                   >
                     Altın
+                  </Link>
+                  <Link
+                    href="/yatirim-fonlari"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600"
+                  >
+                    Yatırım Fonları
                   </Link>
                 </div>
               )}
