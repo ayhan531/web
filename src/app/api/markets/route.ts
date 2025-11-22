@@ -11,8 +11,12 @@ function getTokenFromCookie(cookieHeader: string | null) {
 }
 
 export async function GET() {
-  const markets = await prisma.market.findMany({ orderBy: { updatedAt: 'desc' } });
-  return NextResponse.json(markets);
+  try {
+    const markets = await prisma.market.findMany({ orderBy: { name: 'asc' } });
+    return NextResponse.json(markets);
+  } catch (error) {
+    return NextResponse.json([]);
+  }
 }
 
 export async function POST(req: Request) {

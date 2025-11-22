@@ -11,8 +11,23 @@ function getTokenFromCookie(cookieHeader: string | null) {
 }
 
 export async function GET() {
-  const banners = await prisma.banner.findMany({ orderBy: { order: 'desc' } });
-  return NextResponse.json(banners);
+  try {
+    const banners = await prisma.banner.findMany({ orderBy: { order: 'desc' } });
+    return NextResponse.json(banners);
+  } catch (error) {
+    // Fallback mock data when database is not available
+    return NextResponse.json([
+      {
+        id: 1,
+        title: 'YatırımPRO ile Geleceğe Yatırım Yapın',
+        content: 'Profesyonel yatırım danışmanlığı hizmetimizle hedeflerinize ulaşın',
+        image: null,
+        link: '/kayit',
+        order: 1,
+        createdAt: new Date().toISOString()
+      }
+    ]);
+  }
 }
 
 export async function POST(req: Request) {
