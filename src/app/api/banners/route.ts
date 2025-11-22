@@ -15,18 +15,8 @@ export async function GET() {
     const banners = await prisma.banner.findMany({ orderBy: { order: 'desc' } });
     return NextResponse.json(banners);
   } catch (error) {
-    // Fallback mock data when database is not available
-    return NextResponse.json([
-      {
-        id: 1,
-        title: 'YatırımPRO ile Geleceğe Yatırım Yapın',
-        content: 'Profesyonel yatırım danışmanlığı hizmetimizle hedeflerinize ulaşın',
-        image: null,
-        link: '/kayit',
-        order: 1,
-        createdAt: new Date().toISOString()
-      }
-    ]);
+    console.error('Database error:', error);
+    return NextResponse.json({ error: 'Failed to fetch banners' }, { status: 500 });
   }
 }
 
