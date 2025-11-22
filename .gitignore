@@ -38,6 +38,12 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Prisma
+*.db
+*.db-journal
+prisma/*.db
+prisma/*.db-journal
+
 # deployment
 *.zip
 
